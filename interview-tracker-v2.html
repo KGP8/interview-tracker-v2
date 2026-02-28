@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>28-Day Frontend Interview OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROOT VARIABLES
+============================================================ */
+:root {
+  --bg:       #07090d;
+  --bg2:      #0d1117;
+  --bg3:      #161b22;
+  --bg4:      #1c2330;
+  --bg5:      #222b38;
+  --border:   #1e2530;
+  --brdg:     #2d3748;
+  --text:     #e2e8f0;
+  --text2:    #8899aa;
+  --text3:    #556070;
+  --accent:   #4d9fff;
+  --accent2:  #1a5ccc;
+  --green:    #36c758;
+  --gdim:     #142b1c;
+  --yellow:   #f0a500;
+  --ydim:     #2e1f00;
+  --red:      #f25555;
+  --rdim:     #2e0d0d;
+  --purple:   #b07aff;
+  --pdim:     #1e1030;
+  --cyan:     #52d9f5;
+  --orange:   #ff8c42;
+  --font-m:   'JetBrains Mono', monospace;
+  --font-s:   'Syne', sans-serif;
+  --r:        8px;
+  --rl:       12px;
+  --t:        0.18s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-s);line-height:1.6;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(26,92,204,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(176,122,255,0.06) 0%, transparent 60%);}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--brdg);border-radius:3px}
+
+/* ============================================================
+   HEADER
+============================================================ */
+#header{position:sticky;top:0;z-index:200;background:rgba(7,9,13,0.93);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);padding:0 20px}
+.hdr-top{max-width:1140px;margin:0 auto;padding:12px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--font-m);font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.07em;
+  text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.brand-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);
+  animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.day-chip{font-family:var(--font-m);font-size:11px;font-weight:700;background:var(--accent2);
+  color:#fff;padding:4px 11px;border-radius:20px;white-space:nowrap;cursor:pointer;transition:background var(--t)}
+.day-chip:hover{background:var(--accent)}
+.hdr-stats{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
+.s-pill{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:16px;padding:4px 10px;font-family:var(--font-m);font-size:11px}
+.s-pill .lbl{color:var(--text3)}
+.s-pill .val{color:var(--text);font-weight:700}
+.status-chip{font-family:var(--font-m);font-size:10px;font-weight:700;padding:4px 10px;border-radius:16px;
+  text-transform:uppercase;letter-spacing:.09em;white-space:nowrap;transition:all var(--t)}
+.s-ahead{background:var(--gdim);color:var(--green);border:1px solid var(--green)}
+.s-ontrack{background:rgba(77,159,255,.09);color:var(--accent);border:1px solid var(--accent2)}
+.s-behind{background:var(--ydim);color:var(--yellow);border:1px solid var(--yellow)}
+.s-new{background:var(--bg4);color:var(--text3);border:1px solid var(--brdg)}
+.hdr-actions{display:flex;gap:7px;margin-left:auto}
+.btn{font-family:var(--font-m);font-size:11px;font-weight:600;padding:5px 11px;border-radius:var(--r);
+  border:1px solid var(--brdg);background:var(--bg3);color:var(--text2);cursor:pointer;
+  transition:all var(--t);letter-spacing:.03em;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(77,159,255,.06)}
+.btn-accent{background:var(--accent2);color:#fff;border-color:var(--accent)}
+.btn-accent:hover{background:var(--accent);color:#000}
+.btn-warn{background:var(--rdim);color:var(--red);border-color:var(--red)}
+.btn-warn:hover{background:var(--red);color:#fff}
+.hdr-bar{max-width:1140px;margin:0 auto;padding:0 0 10px;display:flex;align-items:center;gap:10px}
+.pb-wrap{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--purple));border-radius:3px;
+  width:0%;transition:width .5s ease}
+.pb-lbl{font-family:var(--font-m);font-size:11px;color:var(--text3);white-space:nowrap}
+
+/* ============================================================
+   NAV TABS (feature panels)
+============================================================ */
+.nav-tabs{max-width:1140px;margin:0 auto;display:flex;gap:2px;padding:8px 0 0;overflow-x:auto}
+.nav-tab{font-family:var(--font-m);font-size:11px;font-weight:600;padding:6px 13px;
+  border-radius:6px 6px 0 0;border:1px solid transparent;border-bottom:none;cursor:pointer;
+  color:var(--text3);background:transparent;transition:all var(--t);white-space:nowrap;letter-spacing:.04em}
+.nav-tab:hover{color:var(--text2);background:var(--bg3)}
+.nav-tab.active{color:var(--accent);background:var(--bg3);border-color:var(--border)}
+
+/* ============================================================
+   CONTAINER
+============================================================ */
+.container{max-width:1140px;margin:0 auto;padding:28px 20px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* ============================================================
+   WEEKLY SUMMARY CARDS
+============================================================ */
+.week-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.wk-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:15px;
+  transition:border-color var(--t)}
+.wk-card:hover{border-color:var(--brdg)}
+.wk-title{font-family:var(--font-m);font-size:9px;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:7px}
+.wk-pct{font-family:var(--font-m);font-size:20px;font-weight:700;color:var(--text)}
+.wk-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.wk-bars{display:flex;gap:2px;align-items:flex-end;height:28px;margin-top:8px}
+.wk-bar{flex:1;background:var(--bg5);border-radius:2px;transition:height .4s ease,background .3s}
+
+/* ============================================================
+   WEEK SECTION
+============================================================ */
+.week-sec{margin-bottom:28px}
+.week-hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.week-lbl{font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text3);white-space:nowrap}
+.week-line{flex:1;height:1px;background:var(--border)}
+.week-inline{font-family:var(--font-m);font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* ============================================================
+   DAY CARDS
+============================================================ */
+.day-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  margin-bottom:8px;overflow:hidden;transition:border-color var(--t),box-shadow var(--t)}
+.day-card:hover{border-color:var(--brdg)}
+.day-card.today{border-color:var(--accent2);animation:today-pulse 3s ease-in-out infinite}
+@keyframes today-pulse{0%,100%{box-shadow:0 0 0 1px rgba(77,159,255,.15),0 0 18px rgba(77,159,255,.06)}
+  50%{box-shadow:0 0 0 2px rgba(77,159,255,.3),0 0 28px rgba(77,159,255,.12)}}
+.day-card.dc-complete{border-left:3px solid var(--green)}
+.day-card.dc-inprogress{border-left:3px solid var(--yellow)}
+.day-card.dc-skipped{border-left:3px solid var(--text3);opacity:.55}
+.day-card.dc-pending{border-left:3px solid var(--border)}
+
+.day-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;
+  user-select:none;transition:background var(--t)}
+.day-hdr:hover{background:rgba(255,255,255,.015)}
+.day-num{font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--text3);min-width:34px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--brdg);flex-shrink:0;transition:background var(--t)}
+.day-card.dc-complete .dot{background:var(--green)}
+.day-card.dc-inprogress .dot{background:var(--yellow)}
+.day-card.dc-skipped .dot{background:var(--text3)}
+.day-ttl{flex:1;font-size:13px;font-weight:700;color:var(--text)}
+.today-tag{display:none;font-family:var(--font-m);font-size:9px;font-weight:700;background:var(--accent2);
+  color:#fff;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.08em}
+.day-card.today .today-tag{display:inline-block}
+.mini-bar{width:56px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;flex-shrink:0}
+.mini-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .3s}
+.day-pct{font-family:var(--font-m);font-size:11px;color:var(--text3);min-width:32px;text-align:right}
+.toggle-ic{color:var(--text3);font-size:11px;transition:transform .22s ease;flex-shrink:0}
+.day-card.open .toggle-ic{transform:rotate(90deg)}
+.day-body{display:none;padding:0 16px 16px;animation:fadein .18s ease}
+.day-card.open .day-body{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   INNER GRID
+============================================================ */
+.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.sec{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.sec-ttl{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.sec-ttl::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;
+  background:var(--accent);flex-shrink:0}
+.sec-full{margin-bottom:10px}
+
+/* ============================================================
+   CHECKBOXES
+============================================================ */
+.ci{display:flex;align-items:flex-start;gap:8px;padding:4px 0;cursor:pointer}
+.ci input[type=checkbox]{display:none}
+.cb{width:15px;height:15px;border:1.5px solid var(--brdg);border-radius:4px;flex-shrink:0;
+  margin-top:2px;transition:all var(--t);display:flex;align-items:center;justify-content:center;
+  background:var(--bg2)}
+.ci:hover .cb{border-color:var(--accent)}
+.ci input:checked + .cb{background:var(--green);border-color:var(--green)}
+.ci input:checked + .cb::after{content:'';display:block;width:8px;height:4px;
+  border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+.cl{font-size:12px;color:var(--text2);transition:color var(--t);line-height:1.4}
+.ci:has(input:checked) .cl{color:var(--text3);text-decoration:line-through}
+
+/* ============================================================
+   QUESTIONS
+============================================================ */
+.qi{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);
+  font-size:12px;color:var(--text2);align-items:flex-start}
+.qi:last-child{border-bottom:none}
+.qn{font-family:var(--font-m);font-size:9px;color:var(--accent);font-weight:700;
+  min-width:16px;margin-top:2px}
+
+/* ============================================================
+   INPUTS
+============================================================ */
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-family:var(--font-m);font-size:12px;line-height:1.6;padding:9px;
+  resize:vertical;min-height:75px;transition:border-color var(--t);outline:none}
+textarea:focus{border-color:var(--accent)}
+textarea::placeholder{color:var(--text3)}
+select,input[type=number],input[type=text]{background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text);font-family:var(--font-m);font-size:12px;
+  padding:6px 9px;outline:none;transition:border-color var(--t);width:100%}
+select:focus,input[type=number]:focus,input[type=text]:focus{border-color:var(--accent)}
+select option{background:var(--bg3)}
+
+/* ============================================================
+   META ROW
+============================================================ */
+.meta-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.mf label{display:block;font-family:var(--font-m);font-size:9px;color:var(--text3);
+  margin-bottom:4px;text-transform:uppercase;letter-spacing:.09em}
+.stars{display:flex;gap:3px;margin-top:5px}
+.star{font-size:13px;color:var(--brdg);transition:color var(--t);cursor:default}
+.star.lit{color:var(--yellow)}
+
+/* ============================================================
+   DAY STATUS ROW
+============================================================ */
+.dsr{display:flex;gap:7px;margin-top:14px;padding-top:13px;border-top:1px solid var(--border);flex-wrap:wrap}
+.sbtn{font-family:var(--font-m);font-size:10px;font-weight:700;padding:5px 11px;border-radius:6px;
+  border:1px solid var(--border);background:transparent;cursor:pointer;transition:all var(--t);
+  letter-spacing:.04em;color:var(--text3)}
+.sbtn:hover{color:var(--text);border-color:var(--brdg)}
+.sbtn.ac-complete{background:var(--gdim);color:var(--green);border-color:var(--green)}
+.sbtn.ac-skipped{background:var(--bg4);color:var(--text2);border-color:var(--brdg)}
+.sbtn.ac-pending{background:var(--ydim);color:var(--yellow);border-color:var(--yellow)}
+
+/* ============================================================
+   SCROLL ANCHOR
+============================================================ */
+.scroll-anc{scroll-margin-top:130px}
+
+/* ============================================================
+   ── FEATURE: RAPID RECALL ──
+============================================================ */
+#panel-recall{animation:fadein .22s ease}
+.recall-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:gap}
+.recall-hdr h2{font-size:20px;font-weight:800;color:var(--text)}
+.recall-hdr p{font-size:13px;color:var(--text2);margin-top:3px}
+.flashcard-arena{display:flex;flex-direction:column;align-items:center;gap:20px}
+.fc-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.fc-filter{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:4px}
+.fc-tag{font-family:var(--font-m);font-size:10px;padding:4px 10px;border-radius:14px;
+  border:1px solid var(--border);background:var(--bg3);color:var(--text3);cursor:pointer;
+  transition:all var(--t)}
+.fc-tag.active{background:var(--accent2);color:#fff;border-color:var(--accent)}
+.flashcard{width:100%;max-width:700px;min-height:220px;background:var(--bg2);
+  border:1px solid var(--brdg);border-radius:16px;padding:36px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  position:relative;transition:transform .08s ease,box-shadow var(--t);perspective:1000px}
+.flashcard:hover{box-shadow:0 8px 40px rgba(77,159,255,.1)}
+.fc-day-badge{position:absolute;top:14px;left:16px;font-family:var(--font-m);font-size:9px;
+  color:var(--text3);background:var(--bg3);border:1px solid var(--border);
+  padding:2px 8px;border-radius:10px}
+.fc-question{font-size:16px;font-weight:700;color:var(--text);line-height:1.5;margin-bottom:8px}
+.fc-tap{font-family:var(--font-m);font-size:10px;color:var(--text3);margin-top:12px}
+.fc-answer{font-size:13px;color:var(--text2);line-height:1.7;margin-top:10px;display:none;
+  border-top:1px solid var(--border);padding-top:14px;width:100%;text-align:left}
+.flashcard.revealed .fc-answer{display:block}
+.flashcard.revealed .fc-tap{display:none}
+.fc-rating-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.fc-rate-btn{font-family:var(--font-m);font-size:10px;font-weight:700;padding:6px 14px;
+  border-radius:20px;border:1px solid var(--border);cursor:pointer;transition:all var(--t);color:var(--text2);
+  background:var(--bg3)}
+.fc-rate-btn:hover{border-color:var(--accent);color:var(--accent)}
+.fc-rate-btn.r-easy{background:var(--gdim);color:var(--green);border-color:var(--green)}
+.fc-rate-btn.r-medium{background:var(--ydim);color:var(--yellow);border-color:var(--yellow)}
+.fc-rate-btn.r-hard{background:var(--rdim);color:var(--red);border-color:var(--red)}
+.fc-prog{font-family:var(--font-m);font-size:11px;color:var(--text3)}
+.fc-empty{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
+
+/* ============================================================
+   ── FEATURE: MISTAKE LOG ──
+============================================================ */
+#panel-mistakes{animation:fadein .22s ease}
+.ml-add-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:20px;margin-bottom:20px}
+.ml-add-form h3{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text)}
+.ml-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ml-field label{display:block;font-family:var(--font-m);font-size:9px;color:var(--text3);
+  margin-bottom:4px;text-transform:uppercase;letter-spacing:.09em}
+.ml-list{display:flex;flex-direction:column;gap:8px}
+.ml-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;transition:border-color var(--t);position:relative}
+.ml-item:hover{border-color:var(--brdg)}
+.ml-item-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.ml-sev{font-family:var(--font-m);font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;
+  flex-shrink:0;margin-top:2px}
+.sev-high{background:var(--rdim);color:var(--red);border:1px solid var(--red)}
+.sev-med{background:var(--ydim);color:var(--yellow);border:1px solid var(--yellow)}
+.sev-low{background:var(--gdim);color:var(--green);border:1px solid var(--green)}
+.ml-topic{font-size:13px;font-weight:700;color:var(--text);flex:1}
+.ml-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.ml-tag{font-family:var(--font-m);font-size:9px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text3);padding:2px 8px;border-radius:8px}
+.ml-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:6px}
+.ml-fix{font-size:12px;color:var(--green);line-height:1.5;
+  border-top:1px solid var(--border);padding-top:6px;margin-top:6px}
+.ml-fix::before{content:'✓ Fix: ';font-family:var(--font-m);font-size:10px;font-weight:700}
+.ml-del{position:absolute;top:12px;right:12px;background:transparent;border:none;
+  color:var(--text3);cursor:pointer;font-size:14px;transition:color var(--t);padding:2px}
+.ml-del:hover{color:var(--red)}
+.ml-empty{text-align:center;padding:50px 20px;color:var(--text3);font-size:14px;
+  border:1px dashed var(--border);border-radius:var(--r)}
+.ml-resolve-btn{font-family:var(--font-m);font-size:9px;font-weight:700;padding:3px 8px;
+  border-radius:8px;border:1px solid var(--brdg);background:var(--bg3);color:var(--text3);
+  cursor:pointer;transition:all var(--t)}
+.ml-resolve-btn:hover{background:var(--gdim);color:var(--green);border-color:var(--green)}
+.ml-item.resolved{opacity:.45}
+.ml-item.resolved .ml-resolve-btn{background:var(--gdim);color:var(--green);border-color:var(--green)}
+
+/* ============================================================
+   ── FEATURE: REVISION LOOP ──
+============================================================ */
+#panel-revision{animation:fadein .22s ease}
+.rl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px}
+.rl-bucket{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px}
+.rl-bucket-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.rl-bucket-dot{width:8px;height:8px;border-radius:50%}
+.rl-bucket-name{font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text2)}
+.rl-bucket-count{font-family:var(--font-m);font-size:10px;color:var(--text3);margin-left:auto}
+.rl-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px;margin-bottom:6px;font-size:12px;color:var(--text2);cursor:pointer;
+  transition:all var(--t);display:flex;align-items:center;gap:8px}
+.rl-item:hover{border-color:var(--brdg);color:var(--text)}
+.rl-day-badge{font-family:var(--font-m);font-size:9px;color:var(--text3);background:var(--bg4);
+  padding:1px 6px;border-radius:6px;flex-shrink:0}
+.rl-schedule{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:20px;margin-bottom:20px}
+.rl-schedule h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.rl-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.rl-cal-day{aspect-ratio:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:9px;
+  color:var(--text3);cursor:pointer;transition:all var(--t);position:relative}
+.rl-cal-day:hover{border-color:var(--brdg)}
+.rl-cal-day.has-revision{background:var(--pdim);border-color:var(--purple);color:var(--purple)}
+.rl-cal-day.today-cal{background:var(--accent2);border-color:var(--accent);color:#fff;font-weight:700}
+.rl-dot-badge{position:absolute;top:2px;right:2px;width:4px;height:4px;
+  border-radius:50%;background:var(--orange)}
+
+/* ============================================================
+   ── FEATURE: PROJECT MAPPING ──
+============================================================ */
+#panel-projects{animation:fadein .22s ease}
+.pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.pm-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:18px;transition:border-color var(--t);position:relative}
+.pm-card:hover{border-color:var(--brdg)}
+.pm-card-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.pm-icon{font-size:22px;line-height:1}
+.pm-name{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.pm-status-badge{font-family:var(--font-m);font-size:9px;font-weight:700;padding:3px 8px;
+  border-radius:10px;flex-shrink:0}
+.ps-active{background:var(--gdim);color:var(--green);border:1px solid var(--green)}
+.ps-planned{background:var(--ydim);color:var(--yellow);border:1px solid var(--yellow)}
+.ps-done{background:var(--bg4);color:var(--text3);border:1px solid var(--brdg)}
+.pm-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.pm-concepts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.pm-concept{font-family:var(--font-m);font-size:10px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--accent);padding:2px 8px;border-radius:8px}
+.pm-links{display:flex;gap:8px;flex-wrap:wrap}
+.pm-link-input{flex:1;min-width:120px;font-size:11px;padding:5px 8px}
+.pm-add-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:20px;margin-top:16px}
+.pm-add-form h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.pm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.pm-field label{display:block;font-family:var(--font-m);font-size:9px;color:var(--text3);
+  margin-bottom:4px;text-transform:uppercase;letter-spacing:.09em}
+.pm-del{position:absolute;top:12px;right:12px;background:transparent;border:none;
+  color:var(--text3);cursor:pointer;font-size:13px;transition:color var(--t)}
+.pm-del:hover{color:var(--red)}
+
+/* ============================================================
+   ── FEATURE: EXPLANATION SCORE ──
+============================================================ */
+#panel-explain{animation:fadein .22s ease}
+.es-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.es-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:16px;text-align:center}
+.es-stat-val{font-family:var(--font-m);font-size:28px;font-weight:700}
+.es-stat-lbl{font-family:var(--font-m);font-size:10px;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.es-list{display:flex;flex-direction:column;gap:8px}
+.es-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;transition:border-color var(--t);cursor:pointer}
+.es-item:hover{border-color:var(--brdg)}
+.es-item-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.es-day{font-family:var(--font-m);font-size:9px;color:var(--text3);background:var(--bg3);
+  border:1px solid var(--border);padding:2px 7px;border-radius:8px;flex-shrink:0}
+.es-day-title{font-size:13px;font-weight:700;color:var(--text);flex:1}
+.es-score{font-family:var(--font-m);font-size:12px;font-weight:700;flex-shrink:0}
+.es-score-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.es-score-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.es-text{font-size:12px;color:var(--text2);line-height:1.5;
+  border-left:2px solid var(--border);padding-left:10px;font-style:italic}
+.es-no-entry{font-size:11px;color:var(--text3);font-style:italic}
+.es-ai-badge{font-family:var(--font-m);font-size:9px;background:var(--pdim);
+  color:var(--purple);border:1px solid var(--purple);padding:2px 7px;border-radius:8px;flex-shrink:0}
+
+/* ============================================================
+   ── FEATURE: WEAKNESS CONSOLE ──
+============================================================ */
+#panel-weakness{animation:fadein .22s ease}
+.wc-console{background:#050810;border:1px solid var(--border);border-radius:var(--rl);
+  font-family:var(--font-m);font-size:12px;padding:0;overflow:hidden;margin-bottom:20px}
+.wc-console-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:8px 14px;
+  display:flex;align-items:center;gap:8px}
+.wc-dot{width:10px;height:10px;border-radius:50%}
+.wc-console-title{font-size:10px;color:var(--text3);margin-left:4px;letter-spacing:.06em}
+.wc-body{padding:16px;min-height:200px;max-height:450px;overflow-y:auto;line-height:1.9}
+.wc-line{display:flex;gap:8px}
+.wc-prompt{color:var(--green);flex-shrink:0}
+.wc-output{color:var(--text2)}
+.wc-warn{color:var(--yellow)}
+.wc-error{color:var(--red)}
+.wc-success{color:var(--green)}
+.wc-info{color:var(--cyan)}
+.wc-cmd{color:var(--purple)}
+.wc-dim{color:var(--text3)}
+.wc-chart{margin:10px 0}
+.wc-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.wc-bar-lbl{width:160px;color:var(--text2);font-size:11px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;flex-shrink:0}
+.wc-bar-track{flex:1;height:10px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.wc-bar-val{height:100%;border-radius:2px;transition:width .6s ease}
+.wc-bar-num{font-size:10px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
+.wk-heatmap{display:grid;grid-template-columns:repeat(28,1fr);gap:3px;margin:10px 0}
+.hm-cell{aspect-ratio:1;border-radius:2px;cursor:pointer;transition:opacity var(--t)}
+.hm-cell:hover{opacity:.7}
+.wc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.wc-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.wc-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px;text-align:center}
+.wc-stat-v{font-family:var(--font-m);font-size:18px;font-weight:700}
+.wc-stat-l{font-family:var(--font-m);font-size:9px;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+
+/* ============================================================
+   MODALS
+============================================================ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:20px;animation:fadein .15s ease}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--brdg);border-radius:16px;
+  padding:24px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.modal-ttl{font-size:16px;font-weight:800;color:var(--text);margin-bottom:16px}
+.modal-close{float:right;background:none;border:none;color:var(--text3);
+  cursor:pointer;font-size:18px;transition:color var(--t)}
+.modal-close:hover{color:var(--red)}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:900px){
+  .day-grid,.ml-row,.rl-grid,.es-grid,.pm-grid,.pm-form-grid,.meta-row{grid-template-columns:1fr}
+  .week-summary{grid-template-columns:1fr 1fr}
+  .wc-stat-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .week-summary{grid-template-columns:1fr}
+  .container{padding:16px 12px}
+  .hdr-top{gap:8px}
+  .wk-heatmap{grid-template-columns:repeat(14,1fr)}
+  .rl-calendar{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ============================================================
+   MISC UTILITIES
+============================================================ */
+.flex{display:flex}.gap-8{gap:8px}.gap-10{gap:10px}.mt-10{margin-top:10px}.mt-16{margin-top:16px}
+.text-center{text-align:center}.text-sm{font-size:12px}.text-xs{font-size:11px}
+.text-muted{color:var(--text3)}.fw-7{font-weight:700}
+.section-heading{font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.divider{height:1px;background:var(--border);margin:16px 0}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header id="header">
+  <div class="hdr-top">
+    <div class="brand"><span class="brand-dot"></span>FE Interview OS</div>
+    <div class="day-chip" onclick="scrollToToday()" id="day-chip">DAY 1 / 28</div>
+    <div class="hdr-stats">
+      <div class="s-pill"><span class="lbl">Progress</span><span class="val" id="h-overall">0%</span></div>
+      <div class="s-pill"><span class="lbl">Done</span><span class="val" id="h-done">0/28</span></div>
+      <div class="s-pill"><span class="lbl">Hours</span><span class="val" id="h-hours">0h</span></div>
+      <div class="s-pill"><span class="lbl">Avg Rating</span><span class="val" id="h-rating">—</span></div>
+      <span class="status-chip s-new" id="h-status">NOT STARTED</span>
+    </div>
+    <div class="hdr-actions">
+      <button class="btn" onclick="switchPanel('tracker')">📋 Tracker</button>
+      <button class="btn" onclick="switchPanel('recall')">⚡ Recall</button>
+      <button class="btn" onclick="switchPanel('mistakes')">🔴 Mistakes</button>
+      <button class="btn" onclick="switchPanel('revision')">🔁 Revision</button>
+      <button class="btn" onclick="switchPanel('projects')">🗂 Projects</button>
+      <button class="btn" onclick="switchPanel('explain')">💬 Explain</button>
+      <button class="btn" onclick="switchPanel('weakness')">📊 Console</button>
+      <button class="btn btn-accent" onclick="exportData()">↓ Export</button>
+    </div>
+  </div>
+  <div class="hdr-bar">
+    <div class="pb-wrap"><div class="pb-fill" id="main-pb"></div></div>
+    <span class="pb-lbl" id="pb-lbl">0 / 0 tasks</span>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<main class="container">
+
+  <!-- ===== PANEL: TRACKER ===== -->
+  <div class="panel active" id="panel-tracker">
+    <div class="week-summary">
+      <div class="wk-card"><div class="wk-title">Week 1 — Fundamentals</div>
+        <div class="wk-pct" id="w1-pct">0%</div>
+        <div class="wk-sub">HTML · CSS · JS Core</div>
+        <div class="wk-bars" id="w1-bars"></div></div>
+      <div class="wk-card"><div class="wk-title">Week 2 — React</div>
+        <div class="wk-pct" id="w2-pct">0%</div>
+        <div class="wk-sub">Hooks · Performance · Forms</div>
+        <div class="wk-bars" id="w2-bars"></div></div>
+      <div class="wk-card"><div class="wk-title">Week 3 — Next.js & Design</div>
+        <div class="wk-pct" id="w3-pct">0%</div>
+        <div class="wk-sub">SSR · Security · System Design</div>
+        <div class="wk-bars" id="w3-bars"></div></div>
+      <div class="wk-card"><div class="wk-title">Week 4 — DSA & Mock</div>
+        <div class="wk-pct" id="w4-pct">0%</div>
+        <div class="wk-sub">Algorithms · Machine Code · Mock</div>
+        <div class="wk-bars" id="w4-bars"></div></div>
+    </div>
+    <div id="days-container"></div>
+  </div>
+
+  <!-- ===== PANEL: RAPID RECALL ===== -->
+  <div class="panel" id="panel-recall">
+    <div class="section-heading">⚡ Rapid Recall</div>
+    <div class="section-sub">Flashcards from your 28-day interview questions. Click to reveal. Rate to track mastery.</div>
+    <div class="flashcard-arena">
+      <div class="fc-filter" id="fc-filter">
+        <span class="fc-tag active" data-filter="all">All Days</span>
+        <span class="fc-tag" data-filter="hard">Hard 🔴</span>
+        <span class="fc-tag" data-filter="medium">Medium 🟡</span>
+        <span class="fc-tag" data-filter="easy">Easy 🟢</span>
+        <span class="fc-tag" data-filter="unseen">Unseen</span>
+      </div>
+      <span class="fc-prog" id="fc-prog">Card 0 / 0</span>
+      <div class="flashcard" id="flashcard" onclick="revealCard()">
+        <div class="fc-day-badge" id="fc-day-badge">—</div>
+        <div class="fc-question" id="fc-question">Loading flashcards...</div>
+        <div class="fc-answer" id="fc-answer"></div>
+        <div class="fc-tap">↵ tap to reveal answer</div>
+      </div>
+      <div class="fc-rating-row" id="fc-rating-row" style="display:none">
+        <button class="fc-rate-btn r-hard" onclick="rateCard('hard')">😰 Hard — Review Again</button>
+        <button class="fc-rate-btn r-medium" onclick="rateCard('medium')">🤔 Medium — Revisit Later</button>
+        <button class="fc-rate-btn r-easy" onclick="rateCard('easy')">✅ Easy — Got it!</button>
+      </div>
+      <div class="fc-controls">
+        <button class="btn" onclick="prevCard()">← Prev</button>
+        <button class="btn" onclick="nextCard()">Next →</button>
+        <button class="btn" onclick="shuffleCards()">⇌ Shuffle</button>
+        <button class="btn btn-accent" onclick="startRecall()">↺ Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL: MISTAKE LOG ===== -->
+  <div class="panel" id="panel-mistakes">
+    <div class="section-heading">🔴 Mistake Log</div>
+    <div class="section-sub">Log concepts you got wrong, missed, or need to revisit. Track fixes and mark resolved.</div>
+    <div class="ml-add-form">
+      <h3>+ Log a Mistake</h3>
+      <div class="ml-row">
+        <div class="ml-field"><label>Topic / Concept</label>
+          <input type="text" id="ml-topic" placeholder="e.g. useCallback dependency array"></div>
+        <div class="ml-field"><label>Day (1–28)</label>
+          <input type="number" id="ml-day" min="1" max="28" placeholder="Day number"></div>
+      </div>
+      <div class="ml-row">
+        <div class="ml-field"><label>Category</label>
+          <select id="ml-cat">
+            <option value="JS">JavaScript</option>
+            <option value="React">React</option>
+            <option value="CSS">CSS / HTML</option>
+            <option value="Next.js">Next.js</option>
+            <option value="Security">Security</option>
+            <option value="DSA">DSA</option>
+            <option value="Performance">Performance</option>
+            <option value="System Design">System Design</option>
+            <option value="TypeScript">TypeScript</option>
+            <option value="Other">Other</option>
+          </select></div>
+        <div class="ml-field"><label>Severity</label>
+          <select id="ml-sev">
+            <option value="high">🔴 High — Complete gap</option>
+            <option value="med">🟡 Medium — Shaky understanding</option>
+            <option value="low">🟢 Low — Minor detail</option>
+          </select></div>
+      </div>
+      <div class="ml-field mt-10"><label>What went wrong?</label>
+        <textarea id="ml-desc" rows="2" placeholder="Describe what you got wrong or couldn't explain..."></textarea></div>
+      <div class="ml-field mt-10"><label>Correct understanding / Fix</label>
+        <textarea id="ml-fix" rows="2" placeholder="Write the correct explanation or what you need to remember..."></textarea></div>
+      <div class="mt-10"><button class="btn btn-accent" onclick="addMistake()">+ Add to Log</button></div>
+    </div>
+    <div id="ml-list"></div>
+  </div>
+
+  <!-- ===== PANEL: REVISION LOOP ===== -->
+  <div class="panel" id="panel-revision">
+    <div class="section-heading">🔁 Revision Loop</div>
+    <div class="section-sub">Spaced repetition scheduling. Days auto-bucket based on your self-rating.</div>
+    <div class="rl-grid">
+      <div class="rl-bucket">
+        <div class="rl-bucket-hdr">
+          <div class="rl-bucket-dot" style="background:var(--red)"></div>
+          <span class="rl-bucket-name">Needs Revision</span>
+          <span class="rl-bucket-count" id="rl-count-1">0 days</span>
+        </div>
+        <div id="rl-bucket-1"></div>
+      </div>
+      <div class="rl-bucket">
+        <div class="rl-bucket-hdr">
+          <div class="rl-bucket-dot" style="background:var(--yellow)"></div>
+          <span class="rl-bucket-name">Review Soon</span>
+          <span class="rl-bucket-count" id="rl-count-2">0 days</span>
+        </div>
+        <div id="rl-bucket-2"></div>
+      </div>
+      <div class="rl-bucket">
+        <div class="rl-bucket-hdr">
+          <div class="rl-bucket-dot" style="background:var(--green)"></div>
+          <span class="rl-bucket-name">Mastered</span>
+          <span class="rl-bucket-count" id="rl-count-3">0 days</span>
+        </div>
+        <div id="rl-bucket-3"></div>
+      </div>
+    </div>
+    <div class="rl-schedule">
+      <h3>📅 28-Day Revision Calendar</h3>
+      <div class="rl-calendar" id="rl-calendar"></div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL: PROJECT MAPPING ===== -->
+  <div class="panel" id="panel-projects">
+    <div class="section-heading">🗂 Project Mapping</div>
+    <div class="section-sub">Map real projects to the concepts you've learned. Build your evidence base for interviews.</div>
+    <div class="pm-grid" id="pm-grid"></div>
+    <div class="pm-add-form">
+      <h3>+ Add a Project</h3>
+      <div class="pm-form-grid">
+        <div class="pm-field"><label>Project Name</label>
+          <input type="text" id="pm-name" placeholder="e.g. E-commerce Dashboard"></div>
+        <div class="pm-field"><label>Icon / Emoji</label>
+          <input type="text" id="pm-icon" placeholder="🛒" maxlength="4"></div>
+        <div class="pm-field"><label>Status</label>
+          <select id="pm-status">
+            <option value="active">🟢 Active</option>
+            <option value="planned">🟡 Planned</option>
+            <option value="done">⬜ Done</option>
+          </select></div>
+        <div class="pm-field"><label>Day Range (e.g. 8–14)</label>
+          <input type="text" id="pm-days" placeholder="e.g. 8-14"></div>
+      </div>
+      <div class="pm-field"><label>Description</label>
+        <textarea id="pm-desc" rows="2" placeholder="What are you building and why?"></textarea></div>
+      <div class="pm-field mt-10"><label>Concepts Applied (comma-separated)</label>
+        <input type="text" id="pm-concepts" placeholder="useCallback, React.memo, code splitting..."></div>
+      <div class="pm-field mt-10"><label>GitHub / Live URL</label>
+        <input type="text" id="pm-url" placeholder="https://github.com/..."></div>
+      <div class="mt-10"><button class="btn btn-accent" onclick="addProject()">+ Add Project</button></div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL: EXPLANATION SCORE ===== -->
+  <div class="panel" id="panel-explain">
+    <div class="section-heading">💬 Explanation Scores</div>
+    <div class="section-sub">Auto-scored based on word count + quality signals from your written explanations. Improve your articulation.</div>
+    <div class="es-grid">
+      <div class="es-stat"><div class="es-stat-val" id="es-total" style="color:var(--accent)">—</div>
+        <div class="es-stat-lbl">Avg Score</div></div>
+      <div class="es-stat"><div class="es-stat-val" id="es-filled" style="color:var(--green)">0</div>
+        <div class="es-stat-lbl">Days Explained</div></div>
+      <div class="es-stat"><div class="es-stat-val" id="es-best" style="color:var(--purple)">—</div>
+        <div class="es-stat-lbl">Best Day</div></div>
+    </div>
+    <div class="es-list" id="es-list"></div>
+  </div>
+
+  <!-- ===== PANEL: WEAKNESS CONSOLE ===== -->
+  <div class="panel" id="panel-weakness">
+    <div class="section-heading">📊 Weakness Console</div>
+    <div class="section-sub">Live analysis of your performance data. Identifies gaps and prioritizes areas for review.</div>
+    <div class="wc-stat-row">
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-weak-count" style="color:var(--red)">0</div>
+        <div class="wc-stat-l">Weak Spots</div></div>
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-streak" style="color:var(--green)">0</div>
+        <div class="wc-stat-l">Day Streak</div></div>
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-total-hrs" style="color:var(--yellow)">0h</div>
+        <div class="wc-stat-l">Total Hours</div></div>
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-completion" style="color:var(--purple)">0%</div>
+        <div class="wc-stat-l">Completion</div></div>
+    </div>
+    <div class="wc-console">
+      <div class="wc-console-bar">
+        <div class="wc-dot" style="background:#ff5f56"></div>
+        <div class="wc-dot" style="background:#ffbd2e"></div>
+        <div class="wc-dot" style="background:#27c93f"></div>
+        <span class="wc-console-title">weakness-analyzer ~ fe-tracker</span>
+      </div>
+      <div class="wc-body" id="wc-body"></div>
+    </div>
+    <div class="wc-actions">
+      <button class="btn btn-accent" onclick="runWeaknessAnalysis()">↺ Refresh Analysis</button>
+      <button class="btn" onclick="exportWeaknessReport()">↓ Export Report</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ============================================================
+     START DATE MODAL
+============================================================ -->
+<div class="modal-overlay" id="start-modal">
+  <div class="modal">
+    <div class="modal-ttl">🚀 Welcome to FE Interview OS</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.7">
+      Set your 28-day preparation start date. Day 1 will be today by default. You can also choose a past date if you've already started.
+    </p>
+    <div class="mf">
+      <label style="display:block;font-family:var(--font-m);font-size:9px;color:var(--text3);
+        margin-bottom:6px;text-transform:uppercase;letter-spacing:.09em">Start Date</label>
+      <input type="date" id="start-date-input" style="width:100%">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-accent" onclick="saveStartDate()" style="flex:1">Set Start Date & Begin</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   DATA: 28-DAY CURRICULUM
+================================================================ */
+const CURRICULUM = [
+  {day:1,title:"HTML Semantics & Accessibility",
+   topics:["Semantic HTML5 elements (article, section, nav, aside, main)","ARIA roles, labels, and live regions","Document outline algorithm","Forms: accessibility best practices (labels, fieldsets, tabindex)","HTML metadata, Open Graph, and SEO basics"],
+   tasks:["Audit an existing page and replace all <div>s with semantic elements","Build a fully accessible modal dialog from scratch","Add ARIA roles to a navigation with dropdown menus"],
+   questions:["What is the difference between role='button' and a <button> element?","How does the document outline algorithm work in HTML5?","Explain the purpose of aria-live and its values (polite, assertive)."],
+   answers:["A native <button> has built-in keyboard focus, click handling, and implicit role='button'. Using role='button' on a div requires you to manually add tabindex=0, keydown/keyup handlers for Enter/Space, and screen reader announcements. Always prefer native elements.","The H1-H6 heading hierarchy defines the document outline, and semantic sectioning elements (article, section, nav, aside) create new outline sections. Proper heading nesting (h1→h2→h3) ensures accessibility tools can provide accurate navigation.","aria-live='polite' announces changes to screen readers when the user is idle. aria-live='assertive' interrupts immediately. Use polite for notifications, assertive only for critical time-sensitive alerts like form errors."]},
+  {day:2,title:"CSS Cascade, Specificity & Box Model",
+   topics:["CSS cascade: origin, specificity, source order","Specificity calculation (0-0-0 to 1-0-0)","Box model: content, padding, border, margin","box-sizing: border-box vs content-box","Stacking context and z-index"],
+   tasks:["Debug 5 specificity conflicts in a given stylesheet","Recreate a layout using only the box model (no flex/grid)","Build a stacking context demo with z-index and opacity"],
+   questions:["What makes an element create a new stacking context?","How does !important interact with specificity?","Explain collapsing margins and when they don't collapse."],
+   answers:["Stacking contexts are created by: position + z-index not auto, opacity < 1, transform, filter, will-change, mix-blend-mode, isolation:isolate, and CSS Grid/Flex items with z-index. Each creates an isolated z-index namespace.","!important overrides all normal specificity rules but is itself ranked by specificity when two !important declarations conflict. Author !important beats user-agent !important. It's considered bad practice because it breaks the cascade.","Adjacent vertical margins collapse to the larger value between block-level siblings and parent/child elements. They DON'T collapse when: elements are flex/grid children, there's a border/padding between them, one has overflow other than visible, or one is positioned."]},
+  {day:3,title:"CSS Flexbox & Grid Mastery",
+   topics:["Flexbox: container vs item properties, axis, alignment","CSS Grid: explicit/implicit grid, named areas, auto-placement","Combining flex and grid for complex layouts","Responsive design without media queries (auto-fill, minmax)","CSS subgrid"],
+   tasks:["Build a responsive card gallery using CSS Grid (no media queries)","Recreate a dashboard layout with sidebar using Flexbox + Grid","Implement a masonry-like layout with grid"],
+   questions:["What is the difference between align-content and align-items?","How does grid-template-areas work and when would you use it?","Explain the difference between flex-grow, flex-shrink, and flex-basis."],
+   answers:["align-items aligns items within a single flex line (along cross axis). align-content distributes space between multiple flex lines when flex-wrap is enabled. align-content has no effect when there's only one line.","grid-template-areas lets you define named layout zones using ASCII art syntax. You reference them with grid-area on children. It's ideal for page-level layouts where visual clarity of the template is important. Every row must have the same column count, and areas must be rectangular.","flex-basis sets the initial main size before flex algorithm runs. flex-grow distributes extra positive space proportionally. flex-shrink controls how items shrink when there's insufficient space. The shorthand flex: 1 = flex-grow:1 flex-shrink:1 flex-basis:0."]},
+  {day:4,title:"JavaScript: Closures & Scope",
+   topics:["Lexical scope and scope chain","Closures: definition, practical use cases","IIFE pattern and module pattern","let/const vs var: block vs function scope","Hoisting: variables and function declarations"],
+   tasks:["Build a counter factory function using closures","Implement a memoize function from scratch","Fix classic closure-in-loop bug using let vs var"],
+   questions:["Explain how closures work with a practical example.","What is the Temporal Dead Zone (TDZ)?","How does the module pattern use closures for encapsulation?"],
+   answers:["A closure is a function that retains access to its outer scope after the outer function has returned. Example: function counter() { let n=0; return () => ++n; } — the returned arrow function closes over n. Used in React hooks, event handlers, module patterns, and memoization.","The TDZ is the period between the start of a block scope and the let/const declaration line. Accessing the variable during TDZ throws a ReferenceError. Unlike var (hoisted and initialized to undefined), let/const are hoisted but not initialized.","The module pattern uses an IIFE to create a private scope. Only explicitly returned properties become public. The private variables live in the closure and are inaccessible from outside, simulating private class fields before they existed natively."]},
+  {day:5,title:"JavaScript: The Event Loop",
+   topics:["Call stack, heap, and message queue","Microtask queue vs macrotask queue","Promise execution order","setTimeout(fn, 0) behavior","requestAnimationFrame and rendering pipeline"],
+   tasks:["Predict output of 5 complex async/event loop puzzles","Implement a debounce function from scratch","Implement a throttle function and compare with debounce"],
+   questions:["What is the difference between microtask and macrotask queues?","Why does setTimeout(fn, 0) not execute immediately?","Explain the rendering pipeline's relationship with the event loop."],
+   answers:["Microtasks (Promises, queueMicrotask, MutationObserver) run after the current task completes but BEFORE the browser renders or picks the next macrotask. The entire microtask queue drains before anything else. Macrotasks (setTimeout, setInterval, I/O, UI events) are queued normally one-per-loop.","setTimeout(fn, 0) schedules a macrotask. Even with 0ms delay, the function won't run until: the current synchronous code finishes, all microtasks drain, the browser may render, and THEN the macrotask runs. The minimum delay is browser-imposed (usually 4ms in nested contexts).","Between each macrotask, the browser can run the rendering pipeline: style → layout → paint → composite. requestAnimationFrame callbacks run just before paint. Blocking the main thread with long tasks delays rendering, causing jank. This is why Web Workers and async patterns matter."]},
+  {day:6,title:"JavaScript: Prototypes & 'this'",
+   topics:["Prototype chain and Object.getPrototypeOf","Constructor functions vs ES6 classes","'this' binding: implicit, explicit (call/apply/bind), new, arrow","Object.create and prototype delegation","instanceof and property lookup"],
+   tasks:["Implement a class hierarchy using only constructor functions","Build a custom bind() function from scratch","Debug 3 this-binding issues in real code scenarios"],
+   questions:["How does 'this' behave differently in arrow vs regular functions?","What is the prototype chain and how is property lookup performed?","Explain the difference between Object.create() and new keyword."],
+   answers:["Regular functions have dynamic 'this' — determined by how they're called (implicit binding, explicit with call/apply/bind, new binding). Arrow functions have lexical 'this' — captured from the enclosing scope at definition time and cannot be changed even with bind. This is why React event handlers often use arrow functions.","When you access a property, JS first looks at the object itself, then climbs the [[Prototype]] chain (via __proto__) until it finds the property or reaches null (Object.prototype). This chain is set via constructor functions, Object.create, or ES6 class extends.","Object.create(proto) creates a new object with proto as its [[Prototype]] directly, no constructor runs. new Constructor() creates an object, sets its prototype to Constructor.prototype, runs the constructor with this=newObj, and returns it. Object.create is more explicit for prototype delegation patterns."]},
+  {day:7,title:"Async JavaScript: Promises & Async/Await",
+   topics:["Promise states, chaining, and error handling","Promise.all, Promise.race, Promise.allSettled, Promise.any","Async/await syntax and error handling","Converting callbacks to promises (promisify)","Async iterators and generators overview"],
+   tasks:["Build a retry mechanism with exponential backoff using Promises","Implement Promise.all from scratch","Build a sequential vs parallel API fetcher and compare performance"],
+   questions:["What happens if you don't return a value from a .then() callback?","How do you handle errors in async/await and what are the pitfalls?","Explain the difference between Promise.all and Promise.allSettled."],
+   answers:["If you don't return from .then(), the next .then() in the chain receives undefined. If you return a non-Promise value it's wrapped in a resolved Promise. If you return a Promise, the chain waits for it to settle. Forgetting to return is a common bug that breaks Promise chains.","Use try/catch blocks around await calls. Pitfalls: (1) forgetting await makes the catch miss the error, (2) not catching top-level async function errors, (3) not handling parallel failures in Promise.all. Best practice: async/await inside try/catch + .catch() on the async function call site.","Promise.all fails fast — if any promise rejects, the whole thing rejects immediately and other results are discarded. Promise.allSettled always waits for all promises to finish, returning an array of {status, value/reason} objects. Use allSettled when you need all results regardless of failures."]},
+  {day:8,title:"React Fundamentals & Reconciliation",
+   topics:["Virtual DOM and the reconciliation algorithm (Fiber)","JSX compilation and createElement","Keys: why they matter and common mistakes","Component lifecycle: class vs functional","React's rendering heuristics"],
+   tasks:["Trace what happens when setState is called (render, reconcile, commit)","Build a dynamic list and debug key-related bugs","Implement a class component and convert it to a functional component"],
+   questions:["How does React's reconciliation algorithm decide what to update?","Why is using array index as key an anti-pattern?","What is React Fiber and how does it improve the original reconciler?"],
+   answers:["React's diffing algorithm compares the new virtual DOM tree to the previous one. It uses two heuristics: (1) different element types produce different trees (full subtree replacement), (2) keys allow matching children across renders. It's O(n) rather than O(n³) because of these assumptions.","Using index as key causes bugs when list items reorder, insert, or delete. React maps the key to the DOM node — if index 0 always gets key=0, React thinks the first item is the same component across renders, causing stale state, wrong animations, and input focus bugs.","Fiber is React's reimplemented reconciler (v16+). It makes rendering incremental and interruptible by breaking work into units (fibers). This enables concurrent features: time-slicing, Suspense, and priority-based scheduling — unlike the old synchronous stack reconciler."]},
+  {day:9,title:"React Hooks: useState & useEffect Deep Dive",
+   topics:["useState: state batching (React 18), functional updates","useEffect: dependency array, cleanup, and timing","useLayoutEffect vs useEffect","Stale closures in hooks","Rules of hooks and why they exist"],
+   tasks:["Build a real-time search with useEffect and cleanup (abort controller)","Identify and fix a stale closure bug in a timer component","Implement a useLocalStorage custom hook"],
+   questions:["What is the difference between useEffect and useLayoutEffect?","Explain stale closures in React hooks and how to prevent them.","How does React 18 automatic batching change setState behavior?"],
+   answers:["useEffect fires asynchronously after the browser paints. useLayoutEffect fires synchronously after DOM mutations but before paint. Use useLayoutEffect to read layout/DOM measurements and make synchronous updates to prevent visual flicker. Prefer useEffect for everything else to avoid blocking paint.","A stale closure captures an outdated value of a variable from a previous render. Common in useEffect with missing deps. Fix: (1) add all dependencies to the array, (2) use functional setState (prev => prev + 1), (3) use useRef to hold mutable values that shouldn't trigger re-renders.","Before React 18, only event handlers batched multiple setState calls. React 18's automatic batching batches all updates — including in setTimeout, Promises, and native events — into a single render. This reduces re-renders significantly. Use ReactDOM.flushSync() to opt out."]},
+  {day:10,title:"React Hooks: useCallback, useMemo & useRef",
+   topics:["useCallback: when to use and when it hurts","useMemo: computation caching and object identity","useRef: DOM access, mutable values, and avoiding re-renders","React.memo: shallow comparison and custom comparators","The cost of over-optimization"],
+   tasks:["Build a filterable list with useMemo and measure performance","Use useRef to implement an interval timer without re-renders","Profile a component tree and identify unnecessary renders"],
+   questions:["When should you NOT use useCallback or useMemo?","What is the difference between useMemo and useCallback?","How does React.memo differ from PureComponent?"],
+   answers:["Don't use them: (1) for cheap computations (they add overhead), (2) when dependencies change every render anyway, (3) prematurely before profiling shows a problem. The hook itself has a cost. Measure first — most re-renders are not performance problems.","useMemo caches the result of a function call: useMemo(() => compute(a,b), [a,b]). useCallback caches the function reference itself: useCallback(() => fn(a), [a]). useCallback(fn, deps) === useMemo(() => fn, deps). Use useMemo for expensive calculations, useCallback when passing callbacks to memoized children.","React.memo is a HOC for functional components that prevents re-renders if props haven't shallowly changed. PureComponent does the same for class components via shouldComponentUpdate. React.memo accepts a custom comparison function as second argument for deep/custom equality checks."]},
+  {day:11,title:"React: Context API & State Management",
+   topics:["Context API: Provider, Consumer, useContext","Context performance pitfalls and splitting contexts","Lifting state up vs context vs external store","useReducer for complex state","When to choose Zustand, Redux, or Context"],
+   tasks:["Build a theme toggler using Context without unnecessary re-renders","Refactor prop-drilling to useContext + useReducer","Implement a mini Redux from scratch (createStore)"],
+   questions:["What are the performance drawbacks of Context API and how to mitigate them?","Explain when you'd choose useReducer over useState.","How does Zustand differ architecturally from Redux?"],
+   answers:["Every consumer re-renders whenever context value changes — even if they only use a part of it. Mitigations: (1) split contexts by concern, (2) memoize context value with useMemo, (3) use context selectors pattern, (4) use Zustand/Jotai which have built-in subscription selectors.","useReducer is better when: state shape is complex (multiple sub-values), next state depends on the previous in a complex way, or multiple actions affect the same state. It also makes state transitions explicit and testable. Think of it as a local Redux-style reducer.","Zustand uses a pub/sub model outside React's tree. Components subscribe to specific slices, preventing unrelated re-renders. No Provider wrapper required. No boilerplate (actions, reducers, middleware all optional). Redux has more structure, devtools, and middleware ecosystem — better for large teams."]},
+  {day:12,title:"React: Custom Hooks & Composition",
+   topics:["Custom hook patterns and naming conventions","useFetch, useDebounce, useIntersectionObserver","Compound component pattern","Render props vs hooks","Hook composition and testing hooks"],
+   tasks:["Build a usePagination custom hook","Implement compound components for a Tabs component","Create a useForm hook with validation logic"],
+   questions:["What makes a function a 'custom hook' and what are the rules?","Explain the compound component pattern and its advantages.","How would you test a custom hook in isolation?"],
+   answers:["A custom hook is a function that starts with 'use' and calls other hooks. The rules: only call hooks at top level (no conditionals/loops), only call inside React functions/other hooks. The 'use' prefix signals to the linter to enforce these rules. Any function that needs to use state/effects should be a custom hook.","Compound components share implicit state through Context, allowing flexible composition: <Tabs><Tabs.List><Tabs.Tab/></Tabs.List><Tabs.Panel/></Tabs>. Advantages: consumers control rendering structure, no prop drilling, flexible slot-based API. Used in React Aria, Headless UI, Radix.","Use renderHook from @testing-library/react-hooks. It creates a minimal host component for the hook: const { result, act } = renderHook(() => useCounter()). Use act() to wrap state updates. Test both the returned values and side effects. Mock external dependencies (fetch, timers) normally."]},
+  {day:13,title:"React: Forms & Controlled vs Uncontrolled",
+   topics:["Controlled vs uncontrolled components","useRef for uncontrolled form access","Form validation strategies","React Hook Form internals and performance","File uploads and complex input handling"],
+   tasks:["Build a multi-step form with validation from scratch","Implement a custom form validation hook","Compare controlled vs uncontrolled performance with profiler"],
+   questions:["What is the difference between controlled and uncontrolled components?","Why does React Hook Form have better performance than Formik?","How do you handle file uploads in React?"],
+   answers:["Controlled: form values live in React state, onChange updates state on every keystroke, React is source of truth. Uncontrolled: DOM is source of truth, accessed via refs, only read on submit. Controlled is more powerful (instant validation, conditional fields) but causes re-renders. Uncontrolled is simpler for basic forms.","React Hook Form uses uncontrolled inputs with refs, so typing doesn't trigger React re-renders. State only updates on validation triggers (blur, submit). Formik and controlled approaches re-render the entire form on every keystroke. RHF also uses a subscription model to isolate updates to specific fields.","Use an <input type='file'> (uncontrolled). Access via ref or event.target.files (FileList). Create FormData object and append files. For progress: use XMLHttpRequest with upload.onprogress. For previews: use FileReader or URL.createObjectURL(). Handle cleanup with URL.revokeObjectURL."]},
+  {day:14,title:"React: Performance & Profiling",
+   topics:["React DevTools Profiler: flame graph, ranked chart","Code splitting with React.lazy and Suspense","Windowing/virtualization with react-virtual","Avoiding expensive renders: bailout conditions","Web Vitals: LCP, FID, CLS in React apps"],
+   tasks:["Profile a slow component tree and reduce render count by 50%","Implement route-based code splitting","Build a virtualized list of 10,000 items"],
+   questions:["Explain how code splitting improves initial load performance.","What causes layout shift (CLS) in React apps and how to prevent it?","How does windowing improve performance for long lists?"],
+   answers:["Code splitting uses dynamic import() to split your bundle into chunks loaded on demand. React.lazy(() => import('./Component')) + Suspense defers loading until the component is needed. Route-level splitting is the highest-impact approach, potentially reducing initial bundle by 60-80%.","CLS in React: (1) async-loaded images without dimensions (fix: set width/height or aspect-ratio), (2) dynamically injected content pushing layout (fix: reserve space with skeleton/min-height), (3) font swapping (fix: font-display:optional or preload), (4) late hydration causing layout differences.","Virtualization only renders DOM nodes for visible items (+ overscan buffer). A 10k-item list might only have 20-30 real DOM nodes at any time. Libraries like TanStack Virtual, react-window calculate item positions and translate items using CSS transforms. Reduces DOM size from thousands to tens of nodes."]},
+  {day:15,title:"Next.js: Routing & Data Fetching",
+   topics:["App Router vs Pages Router","Server Components vs Client Components","getStaticProps, getServerSideProps, getStaticPaths","Incremental Static Regeneration (ISR)","Route handlers and API routes"],
+   tasks:["Build a blog with ISR that revalidates every 60 seconds","Implement dynamic routes with getStaticPaths","Create an API route that proxies an external API"],
+   questions:["What is the difference between SSG, SSR, and ISR?","Explain when you'd use a Server Component vs Client Component.","How does Next.js App Router handle streaming and Suspense?"],
+   answers:["SSG: pages pre-rendered at build time, served from CDN, best for static content. SSR: page rendered on-demand per request, best for personalized/dynamic data. ISR: SSG with background revalidation after a time window, best of both — static speed with eventual freshness.","Server Components: no JS sent to client, can async/await directly, access backend resources. Client Components: needed for interactivity (onClick, useState, useEffect), browser APIs. Strategy: push Client Components to leaves of the tree, keep data fetching in Server Components.","App Router uses React's streaming + Suspense. Server Components can await data and stream HTML progressively. Wrap slow components in <Suspense fallback={<Loading/>}> to show the shell immediately and stream content as it resolves. This dramatically improves TTFB and perceived performance."]},
+  {day:16,title:"Next.js: Performance & Optimization",
+   topics:["next/image: automatic optimization, lazy loading, blur placeholder","next/font and font optimization","next/script loading strategies","Bundle analysis with @next/bundle-analyzer","Middleware and edge functions"],
+   tasks:["Optimize a Next.js page from 70 to 95+ Lighthouse score","Implement middleware for authentication redirects","Set up bundle analysis and reduce bundle size by 30%"],
+   questions:["How does next/image improve Core Web Vitals?","What are Edge Functions and when would you use them over serverless?","Explain how Middleware works in Next.js and its use cases."],
+   answers:["next/image: auto-converts to WebP/AVIF, generates responsive srcset, lazy loads by default (prevents LCP demotion), prevents CLS by requiring width/height (reserves space), uses blur placeholder for perceived performance, and serves from Next.js image optimization CDN.","Edge Functions run on V8 isolates at CDN edge nodes (no Node.js APIs), with <1ms cold starts vs ~100ms for Lambda. Use for: auth checks, A/B testing, geolocation-based redirects, request rewriting. Don't use for: database queries, heavy compute, Node.js-specific APIs.","Next.js Middleware runs before requests hit pages/API routes, on the Edge Runtime. Use cases: auth (redirect unauthenticated users), internationalization routing, feature flags, bot protection, rate limiting. Access request via NextRequest, return NextResponse.redirect/rewrite/next."]},
+  {day:17,title:"Browser Storage, Caching & Cookies",
+   topics:["localStorage vs sessionStorage vs IndexedDB","HTTP caching: Cache-Control, ETag, stale-while-revalidate","Service Workers and Cache API","Cookies: secure, httpOnly, SameSite attributes","Session management best practices"],
+   tasks:["Implement a service worker with offline-first caching strategy","Build a cache invalidation strategy for an API","Set up secure cookie-based auth flow"],
+   questions:["Explain the difference between httpOnly and secure cookie flags.","What is stale-while-revalidate and how does it improve UX?","When would you choose IndexedDB over localStorage?"],
+   answers:["secure: cookie only sent over HTTPS connections (prevents network sniffing). httpOnly: cookie inaccessible to JavaScript (document.cookie) — prevents XSS from stealing session tokens. Both should always be set on authentication cookies. SameSite=Strict/Lax additionally prevents CSRF by controlling cross-origin cookie sending.","stale-while-revalidate: serve stale cached response immediately (fast UX), then fetch fresh version in background to update cache. The user sees instant response, next request gets fresh data. Cache-Control: max-age=60, stale-while-revalidate=300 means: fresh for 60s, serve stale for up to 5 min while revalidating.","IndexedDB when: data exceeds 5MB, you need structured queries/indexes, storing binary data (files, images, blobs), offline-first apps needing complex data models, or when you need transactions. localStorage for: simple key-value pairs, small config/preferences (< 5MB), synchronous access OK. localStorage blocks the main thread."]},
+  {day:18,title:"Web Security: XSS, CSRF & CSP",
+   topics:["Cross-Site Scripting (XSS): stored, reflected, DOM-based","CSRF: attacks and prevention (tokens, SameSite)","Content Security Policy (CSP) headers","CORS: preflight, credentials, wildcard risks","OWASP Top 10 for frontend"],
+   tasks:["Identify XSS vulnerabilities in a given code snippet and fix them","Configure a strict CSP header for a React app","Set up CORS correctly for a REST API + frontend"],
+   questions:["What is the difference between stored and reflected XSS?","How does a CSRF token prevent cross-site request forgery?","Explain why dangerouslySetInnerHTML is dangerous and when it's safe."],
+   answers:["Stored XSS: malicious script saved in database, served to all users who view it — high impact, persists. Reflected XSS: script in URL parameter, server echoes it back in response — user must click malicious link. DOM-based XSS: client-side JS reads attacker-controlled data and writes to DOM — no server involvement. Prevention: encode all output, use textContent not innerHTML, CSP.","CSRF token is a secret random value tied to the user's session, included in forms/headers. The attacker can't read it (same-origin policy) so can't include it in forged requests. Server validates the token on every state-changing request. SameSite=Lax/Strict cookies are now the primary defense — prevent cookies being sent on cross-site requests.","dangerouslySetInnerHTML bypasses React's XSS protection by injecting raw HTML. It's dangerous because any unsanitized user input with scripts/event handlers executes. It's safe when: content is from a trusted source only, or you've sanitized with DOMPurify first. Never use it with user-generated content directly."]},
+  {day:19,title:"TypeScript for React Engineers",
+   topics:["Type inference, generics, and utility types (Partial, Pick, Omit)","Typing React components, props, and hooks","Discriminated unions for state machines","Type narrowing and type guards","TypeScript with API responses (zod, tRPC)"],
+   tasks:["Convert a JavaScript React component to strict TypeScript","Build a type-safe API client using generics","Model a complex UI state with discriminated unions"],
+   questions:["Explain the difference between 'interface' and 'type' in TypeScript.","What are discriminated unions and when are they useful?","How would you type a higher-order component in TypeScript?"],
+   answers:["interface: can be extended via declaration merging, preferred for object shapes, slightly better error messages. type: can represent unions, intersections, primitives, tuples — more flexible. Rule of thumb: interface for public API/component props (extensible), type for complex types and unions. In practice, they're mostly interchangeable for objects.","Discriminated unions have a common literal 'discriminant' field: type State = {status:'loading'} | {status:'success';data:User} | {status:'error';message:string}. TypeScript narrows the type in switch/if checks. Perfect for async state, form states, UI state machines — eliminates impossible states.","Use generic constraints: function withAuth<T extends {}>(Component: React.ComponentType<T>): React.FC<T & {user:User}>. The HOC preserves the wrapped component's prop types while adding new ones. React.ComponentType accepts both class and functional components."]},
+  {day:20,title:"System Design: Frontend Architecture",
+   topics:["Micro-frontend architecture patterns","Design system architecture (tokens, components, patterns)","Monorepo structure (Nx, Turborepo)","Module federation","API layer design: REST vs GraphQL vs tRPC vs React Query"],
+   tasks:["Design a design system architecture for a large team","Sketch a micro-frontend architecture for an e-commerce platform","Compare REST vs GraphQL for a complex dashboard use case"],
+   questions:["How would you design a component library for multiple products?","What are the tradeoffs of micro-frontend architecture?","When would you choose GraphQL over REST?"],
+   answers:["Layer 1: Design tokens (colors, spacing, typography as CSS variables). Layer 2: Primitive/atomic components (Button, Input, Text). Layer 3: Composite components (Form, DataTable). Layer 4: Pattern documentation. Use Storybook, semantic versioning, automated visual regression tests, and a contribution guide. Publish as tree-shakeable ESM package.","MFE pros: independent deployments, team autonomy, technology diversity, fault isolation. Cons: network overhead (multiple bundles), shared state complexity, duplicate dependencies (can mitigate with shared libs/module federation), harder testing, inconsistent UX across teams. Good for large organizations with separate teams owning distinct product areas.","Choose GraphQL when: clients need to specify exact data shape (avoids over/under-fetching), multiple clients (web/mobile) need different subsets of data, you have complex interconnected data with many relationships, or real-time subscriptions are needed. REST is simpler for CRUD APIs, better caching, and smaller teams."]},
+  {day:21,title:"Web Performance & Core Web Vitals",
+   topics:["LCP, FID/INP, CLS: measurement and improvement","Critical rendering path and render-blocking resources","Resource hints: preload, prefetch, preconnect","Image optimization: WebP, AVIF, responsive images","JavaScript performance: parsing, execution, tree-shaking"],
+   tasks:["Audit a page with Lighthouse and fix all critical issues","Implement resource hints for a multi-page site","Reduce LCP by optimizing the hero image loading"],
+   questions:["What is Interaction to Next Paint (INP) and how do you improve it?","Explain the critical rendering path and how to optimize it.","What causes Cumulative Layout Shift and how do you fix it?"],
+   answers:["INP measures the latency of all interactions (click, key, tap) during the page's lifetime, reporting the worst. Improve by: (1) breaking up long tasks with scheduler.postTask or setTimeout chunking, (2) deferring non-critical JS, (3) using web workers for heavy compute, (4) reducing JS execution time, (5) avoiding layout thrashing in event handlers.","Critical rendering path: HTML parse → DOM, CSS parse → CSSOM, DOM+CSSOM → Render Tree, Layout, Paint, Composite. Optimize by: inlining critical CSS, deferring non-critical CSS/JS, minifying resources, using async/defer on scripts, preloading critical resources, reducing render-blocking resources.","CLS causes: images without dimensions (reserve with width/height or aspect-ratio), late-loaded fonts (font-display:swap or optional), dynamically injected ads/banners (reserve space), late hydration changes. Fix with explicit dimensions, skeleton screens, CSS aspect-ratio, and avoiding DOM insertions above existing content."]},
+  {day:22,title:"DSA: Arrays, Strings & Two Pointers",
+   topics:["Array manipulation: sliding window, two pointers","String algorithms: anagrams, palindromes, substring search","Frequency maps and hash maps","JavaScript Array methods: complexity analysis","Common interview patterns"],
+   tasks:["Solve: Longest substring without repeating characters","Solve: Two sum, Three sum using optimal approaches","Solve: Valid parentheses and minimum window substring"],
+   questions:["Explain the sliding window technique with a real example.","What is the time complexity of Array.sort() in JavaScript?","How do you find all anagrams of a string in O(n) time?"],
+   answers:["Sliding window maintains a window [left, right] that expands/shrinks based on a condition. Example: longest substring without repeats — expand right adding chars to a Set, when duplicate found shrink from left until duplicate removed. O(n) instead of O(n²) brute force. Key: recognize when to shrink the window.","V8 uses Timsort (hybrid merge sort + insertion sort). O(n log n) average and worst case. For arrays ≤ 10 elements, insertion sort is used (O(n²) but faster in practice). The comparator function is called O(n log n) times, so expensive comparators compound the cost.","Use a frequency map. Build char count for pattern (26 chars). Slide a window of pattern.length over string. Maintain a window frequency map. When maps match, you found an anagram. Optimize by tracking 'matches' count (how many chars have equal frequencies) — O(n) time, O(1) space (alphabet is fixed)."]},
+  {day:23,title:"DSA: Recursion, Trees & Traversal",
+   topics:["Recursion fundamentals and call stack visualization","Binary trees: DFS (pre/in/post-order), BFS","DOM tree traversal algorithms","Memoization and dynamic programming intro","Tree manipulation in frontend (virtual DOM, AST)"],
+   tasks:["Implement DFS and BFS for a binary tree","Build a recursive deep clone of a nested object","Traverse a JSON structure and flatten nested keys"],
+   questions:["How is the DOM similar to a tree data structure?","Explain how React's reconciliation uses tree diffing.","What is the space complexity of DFS vs BFS?"],
+   answers:["The DOM is a tree: Document is root, HTML elements are nodes, text/attributes are leaves. Parent-child relationships match tree structure. DOM traversal APIs (parentNode, children, nextSibling) are tree navigation. querySelectorAll does DFS. This is why React's virtual DOM and CSS selector specificity algorithms are tree problems.","React's diffing compares two virtual DOM trees level-by-level (BFS). It makes O(n) by assuming: (1) different types = replace subtree entirely, (2) same type = update attributes, recurse children, (3) keys allow reordering children in O(n) instead of O(n²). Without keys, React assumes positional matching.","DFS space: O(h) where h is tree height — only stores the current path in the call stack. Best case O(log n) balanced tree, worst case O(n) for a linked-list-like tree. BFS space: O(w) where w is maximum width — stores entire level in queue. For balanced tree O(n/2) = O(n) worst case, often worse than DFS."]},
+  {day:24,title:"Machine Coding: UI Components",
+   topics:["Building components from scratch: infinite scroll, autocomplete","Event delegation pattern","Debounce and throttle in UI interactions","Accessibility in interactive components","Component state machines"],
+   tasks:["Build an accessible autocomplete with keyboard navigation from scratch","Implement infinite scroll with Intersection Observer","Build a drag-and-drop list without any libraries"],
+   questions:["How would you implement an autocomplete that works with 100k items?","Explain event delegation and why it's useful for dynamic lists.","How do you make a custom dropdown accessible for keyboard and screen readers?"],
+   answers:["For 100k items: never render all options. (1) Virtualize the dropdown list (only render visible items). (2) Debounce input and filter on the server. (3) Client-side: use a trie or sorted array for O(log n) prefix search, then virtualize results. (4) Cache recent search results. Show max 50 virtualized items with keyboard navigation.","Event delegation: attach ONE listener to a parent instead of listeners on each child. Uses event bubbling — events propagate up from target to root. Benefits: (1) fewer listeners = less memory, (2) works for dynamically added elements, (3) single place to handle logic. Use event.target to identify which child was interacted with.","Required ARIA: role='combobox' on input, aria-expanded, aria-haspopup='listbox', aria-autocomplete. Dropdown: role='listbox', role='option' on items, aria-selected. Keyboard: Arrow keys navigate options, Enter selects, Escape closes, Tab moves focus away (closes). Announce changes with aria-live or focus management."]},
+  {day:25,title:"Machine Coding: Data-Heavy UIs",
+   topics:["Building data tables with sort, filter, pagination","Chart rendering without libraries (Canvas/SVG)","Real-time data with WebSockets","Optimistic UI updates","Form wizard with complex validation"],
+   tasks:["Build a sortable, filterable data table from scratch","Implement a bar chart using SVG only","Build a real-time chat UI with WebSocket"],
+   questions:["How would you build a performant data table with 10,000 rows?","Explain optimistic updates and rollback strategies.","What are the tradeoffs between Canvas and SVG for data visualization?"],
+   answers:["(1) Virtualize rows — only render ~30 visible rows, translate with CSS transforms. (2) Client-side filtering/sorting with memoization (only recompute when data or config changes). (3) Debounce filter input. (4) Pagination OR infinite scroll (not both). (5) Use CSS contain:strict on rows to scope layout calculations. (6) Avoid layout thrashing in column resize.","Optimistic update: immediately update UI assuming success, fire API request in background. On success: nothing needed. On failure: rollback to previous state + show error. Implementation: save previous state before mutation, update state optimistically, in catch block restore previous state. React Query and SWR have built-in optimistic update APIs.","SVG: DOM-based, accessible (text, ARIA), scalable, CSS-styleable, interactive with event listeners, good for < ~1k elements. Canvas: pixel-based, no DOM overhead, better for > ~10k elements, animations, or WebGL. Games/heatmaps/particle systems → Canvas. Charts/diagrams/interactive graphs → SVG (unless large data)."]},
+  {day:26,title:"Behavioral & System Design Practice",
+   topics:["STAR method for behavioral questions","Frontend system design framework (requirements, components, data flow)","Design: URL shortener frontend, Twitter/X-like feed, Google Docs","Scalability considerations in frontend","Trade-off articulation"],
+   tasks:["Do a full system design for a Netflix-like video player UI","Write out 3 STAR stories for past projects","Practice talking through design decisions out loud (record yourself)"],
+   questions:["Design the frontend architecture for a collaborative document editor.","Tell me about a time you improved frontend performance significantly.","How would you design a live sports scoreboard with real-time updates?"],
+   answers:["Collaborative editor: OT or CRDT for conflict resolution. WebSocket for real-time sync. Yjs or Automerge library. Slate.js or ProseMirror for rich text. Components: Editor (Slate), Presence indicators (who's editing), Comment sidebar, Version history. State: local (Zustand) + server (WebSocket). Offline: queue operations and sync on reconnect.","STAR structure: Situation (what was the state), Task (what needed improvement), Action (what you specifically did — be technical), Result (quantified metrics: 40% faster LCP, bundle 300→180KB, INP from 400ms to 80ms). Always quantify. Mention tools: Lighthouse, WebPageTest, React Profiler, bundle-analyzer.","WebSocket for real-time score updates. Reconnection with exponential backoff. Component: ScoreBoard (pure, memoized), GameCard (re-renders only on score change via React.memo + custom comparator), ScrollingTicker. State: normalize by gameId. Optimistic score updates for live animations. Fallback to SSE or polling if WebSocket fails."]},
+  {day:27,title:"Mock Interview: Full-Stack Frontend",
+   topics:["Mixed topics: JS, React, Performance, Security","Code review and debugging exercises","Whiteboard component design","Edge cases and error boundary patterns","Talking through code while writing"],
+   tasks:["Do a 45-min mock interview with a peer (record it)","Review your weakest topic from the past week and re-study","Write solutions to 3 medium-difficulty problems in 60 minutes"],
+   questions:["Debug this React component — why is it re-rendering infinitely?","How would you implement an error boundary that logs to Sentry?","Refactor this imperative DOM manipulation code to be declarative."],
+   answers:["Common infinite re-render causes: (1) object/array in useEffect deps that's recreated each render (fix: useMemo or move outside component), (2) setState inside useEffect without conditions, (3) parent re-renders passing new object reference to React.memo child. Debug with React DevTools Profiler — check 'why did this render' column.","Error boundaries must be class components. Implement getDerivedStateFromError (update state to show fallback) and componentDidCatch (log to Sentry: Sentry.captureException(error, {extra: info})). Wrap at route level and around risky components. React 18's createRoot also supports onRecoverableError for soft errors.","Imperative: document.getElementById + classList + addEventListener. Declarative: describe WHAT (state-driven JSX), not HOW. Convert: extract state (isOpen, selectedItem), derive UI from state (conditional className, ternary rendering), handle events with setState. The DOM becomes a function of state."]},
+  {day:28,title:"Final Review & Interview Day Prep",
+   topics:["Quick review of all 27 days — flashcard style","Top 20 most common frontend interview questions","Mental preparation and interview day logistics","Portfolio and GitHub profile polish","Questions to ask your interviewer"],
+   tasks:["Create a cheat sheet of your top 10 weakest concepts","Review and clean up all code you wrote during the 28 days","Do one final mock interview end-to-end"],
+   questions:["How do you stay up to date with the frontend ecosystem?","What's the most complex UI component you've built and why?","Where do you see the frontend world heading in the next 2 years?"],
+   answers:["Answer authentically: mention specific sources (TC39 proposals, Chrome DevRel blog, Josh Comeau, Kent C. Dodds, official framework RFCs, JS Weekly newsletter, X/Twitter community). Mention building small experiments with new APIs. Show you're selective — you don't chase every trend but understand the important shifts.","Pick your genuinely hardest component. Structure: what it was + why complex (async state, accessibility, performance), technical decisions made, tradeoffs considered, how you tested it. Mention things like: keyboard accessibility, virtualization, complex state machines, real-time sync, error recovery.","Web Components gaining traction, React Server Components becoming standard, Edge computing moving logic closer to users, AI-assisted coding changing developer workflows, performance budgets becoming mandatory, and accessibility becoming a legal requirement. Show you think about the ecosystem holistically."]}
+];
+
+/* ================================================================
+   STORAGE
+================================================================ */
+const SK = 'fe_tracker_v3';
+function load() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch { return {}; } }
+function save() { localStorage.setItem(SK, JSON.stringify(APP)); }
+let APP = load();
+function gd(d) { return APP[`d${d}`] || {}; }
+function sd(d, k, v) { if (!APP[`d${d}`]) APP[`d${d}`] = {}; APP[`d${d}`][k] = v; save(); }
+
+/* ================================================================
+   FIX: getCurrentDay — robust, timezone-safe, never returns 0 or negative
+================================================================ */
+function getCurrentDay() {
+  if (!APP.startDate) return 1;
+  // Normalize both dates to midnight local time to avoid timezone drift
+  const startStr = APP.startDate; // stored as YYYY-MM-DD
+  const todayStr = getTodayString();
+  const start = new Date(startStr + 'T00:00:00');
+  const today = new Date(todayStr + 'T00:00:00');
+  const diffMs = today - start;
+  const diffDays = Math.floor(diffMs / 86400000); // exact day diff, no rounding issues
+  const day = diffDays + 1; // day 1 = start date
+  return Math.min(Math.max(day, 1), 28);
+}
+
+function getTodayString() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function saveStartDate(dateStr) {
+  APP.startDate = dateStr || getTodayString();
+  save();
+}
+
+/* ================================================================
+   RENDER TRACKER
+================================================================ */
+const WEEKS = [
+  {num:1,days:[1,2,3,4,5,6,7],label:'WEEK 1 — HTML · CSS · JS FUNDAMENTALS'},
+  {num:2,days:[8,9,10,11,12,13,14],label:'WEEK 2 — REACT CORE & PATTERNS'},
+  {num:3,days:[15,16,17,18,19,20,21],label:'WEEK 3 — NEXT.JS · SECURITY · SYSTEM DESIGN'},
+  {num:4,days:[22,23,24,25,26,27,28],label:'WEEK 4 — DSA · MACHINE CODING · MOCK INTERVIEWS'},
+];
+
+function renderTracker() {
+  const container = document.getElementById('days-container');
+  container.innerHTML = '';
+  const today = getCurrentDay();
+  WEEKS.forEach(week => {
+    const sec = document.createElement('section');
+    sec.className = 'week-sec';
+    sec.innerHTML = `<div class="week-hdr">
+      <span class="week-lbl">${week.label}</span>
+      <div class="week-line"></div>
+      <span class="week-inline" id="wki${week.num}"></span></div>`;
+    week.days.forEach(dn => sec.appendChild(buildDayCard(dn, today)));
+    container.appendChild(sec);
+  });
+}
+
+function buildDayCard(dn, today) {
+  const d = CURRICULUM[dn-1];
+  const sv = gd(dn);
+  const isToday = dn === today;
+  const status = sv.status || 'pending';
+  const isOpen = isToday || sv.open;
+
+  const dc = d.topics.length + d.tasks.length;
+  const dd = d.topics.filter((_,i)=>sv[`t_${i}`]).length + d.tasks.filter((_,i)=>sv[`k_${i}`]).length;
+  const pct = dc > 0 ? Math.round(dd/dc*100) : 0;
+  const rating = sv.rating || '';
+
+  const card = document.createElement('div');
+  card.className = `day-card scroll-anc${isOpen?' open':''}${isToday?' today':''}${' dc-'+status}`;
+  card.id = `day-${dn}`;
+
+  const stars = [1,2,3,4,5].map(n=>`<span class="star${parseInt(rating)>=n?' lit':''}">★</span>`).join('');
+
+  const topicChecks = d.topics.map((item,i)=>`<label class="ci">
+    <input type="checkbox" data-d="${dn}" data-k="t_${i}"${sv[`t_${i}`]?' checked':''}>
+    <span class="cb"></span><span class="cl">${escHtml(item)}</span></label>`).join('');
+
+  const taskChecks = d.tasks.map((item,i)=>`<label class="ci">
+    <input type="checkbox" data-d="${dn}" data-k="k_${i}"${sv[`k_${i}`]?' checked':''}>
+    <span class="cb"></span><span class="cl">${escHtml(item)}</span></label>`).join('');
+
+  const qItems = d.questions.map((q,i)=>`<div class="qi">
+    <span class="qn">Q${i+1}</span><span>${escHtml(q)}</span></div>`).join('');
+
+  card.innerHTML = `
+  <div class="day-hdr" onclick="toggleDay(${dn})">
+    <span class="day-num">DAY ${String(dn).padStart(2,'0')}</span>
+    <span class="dot"></span>
+    <span class="day-ttl">${escHtml(d.title)}</span>
+    <span class="today-tag">TODAY</span>
+    <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
+    <span class="day-pct">${pct}%</span>
+    <span class="toggle-ic">▶</span>
+  </div>
+  <div class="day-body">
+    <div class="day-grid">
+      <div class="sec"><div class="sec-ttl">Topics to Learn</div>${topicChecks}</div>
+      <div class="sec"><div class="sec-ttl">Hands-on Tasks</div>${taskChecks}</div>
+    </div>
+    <div class="sec sec-full">
+      <div class="sec-ttl">Explain in Your Own Words</div>
+      <textarea data-d="${dn}" data-k="explain" rows="3"
+        placeholder="Explain today's core concepts in plain English...">${escHtml(sv.explain||'')}</textarea>
+    </div>
+    <div class="sec sec-full">
+      <div class="sec-ttl">Real-World Use Case</div>
+      <textarea data-d="${dn}" data-k="usecase" rows="2"
+        placeholder="Where would you use this in a real project?">${escHtml(sv.usecase||'')}</textarea>
+    </div>
+    <div class="sec sec-full">
+      <div class="sec-ttl">Interview Questions to Practice</div>${qItems}
+    </div>
+    <div class="meta-row">
+      <div class="mf"><label>Self Rating</label>
+        <select data-d="${dn}" data-k="rating">
+          <option value="">— Rate yourself —</option>
+          ${[1,2,3,4,5].map((n,_,__)=>{
+            const lbs=['No idea','Vague','Getting there','Solid','Can teach'];
+            return `<option value="${n}"${rating==n?' selected':''}>${n} — ${lbs[n-1]}</option>`;
+          }).join('')}
+        </select>
+        <div class="stars">${stars}</div>
+      </div>
+      <div class="mf"><label>Planned Time (hrs)</label>
+        <input type="number" step="0.5" min="0" max="24" data-d="${dn}" data-k="planned"
+          value="${sv.planned||''}" placeholder="e.g. 3"></div>
+      <div class="mf"><label>Actual Time (hrs)</label>
+        <input type="number" step="0.5" min="0" max="24" data-d="${dn}" data-k="actual"
+          value="${sv.actual||''}" placeholder="e.g. 2.5"></div>
+    </div>
+    <div class="dsr">
+      <button class="sbtn${status==='complete'?' ac-complete':''}" onclick="setDayStatus(${dn},'complete')">✓ Completed</button>
+      <button class="sbtn${status==='pending'?' ac-pending':''}" onclick="setDayStatus(${dn},'pending')">◷ In Progress</button>
+      <button class="sbtn${status==='skipped'?' ac-skipped':''}" onclick="setDayStatus(${dn},'skipped')">↷ Skipped</button>
+    </div>
+    <div class="sec sec-full" style="margin-top:10px">
+      <div class="sec-ttl">Personal Notes</div>
+      <textarea data-d="${dn}" data-k="notes" rows="2"
+        placeholder="Anything to remember...">${escHtml(sv.notes||'')}</textarea>
+    </div>
+  </div>`;
+  return card;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ================================================================
+   TOGGLE + STATUS
+================================================================ */
+function toggleDay(dn) {
+  const el = document.getElementById(`day-${dn}`);
+  const open = el.classList.toggle('open');
+  sd(dn, 'open', open);
+}
+
+function setDayStatus(dn, status) {
+  sd(dn, 'status', status);
+  const el = document.getElementById(`day-${dn}`);
+  el.className = el.className.replace(/dc-\w+/,'') + ` dc-${status}`;
+  el.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('ac-complete','ac-pending','ac-skipped'));
+  el.querySelectorAll('.sbtn').forEach(b=>{
+    if(b.textContent.includes('Completed') && status==='complete') b.classList.add('ac-complete');
+    if(b.textContent.includes('In Progress') && status==='pending') b.classList.add('ac-pending');
+    if(b.textContent.includes('Skipped') && status==='skipped') b.classList.add('ac-skipped');
+  });
+  updateStats();
+}
+
+/* ================================================================
+   EVENT DELEGATION
+================================================================ */
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (!el.dataset.d) return;
+  const dn = +el.dataset.d, k = el.dataset.k;
+  if (el.type === 'checkbox') {
+    sd(dn, k, el.checked);
+    if (el.checked && !APP.startDate) { APP.startDate = getTodayString(); save(); }
+    updateDayPct(dn); updateStats();
+    if (currentPanel === 'recall') buildFlashcards();
+  } else if (el.tagName === 'SELECT') {
+    sd(dn, k, el.value);
+    if (k === 'rating') updateStarsDOM(dn, el.value);
+    updateStats();
+    if (currentPanel === 'revision') renderRevision();
+    if (currentPanel === 'explain') renderExplainScores();
+    if (currentPanel === 'weakness') runWeaknessAnalysis();
+  } else { sd(dn, k, el.value); updateStats(); }
+});
+
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (!el.dataset.d || el.type === 'checkbox') return;
+  sd(+el.dataset.d, el.dataset.k, el.value);
+  if (el.dataset.k === 'explain') { if (currentPanel === 'explain') renderExplainScores(); }
+  updateStats();
+});
+
+function updateStarsDOM(dn, rating) {
+  const card = document.getElementById(`day-${dn}`);
+  if (!card) return;
+  card.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('lit', parseInt(rating)>= i+1));
+}
+
+function updateDayPct(dn) {
+  const d = CURRICULUM[dn-1], sv = gd(dn);
+  const dc = d.topics.length + d.tasks.length;
+  const dd = d.topics.filter((_,i)=>sv[`t_${i}`]).length + d.tasks.filter((_,i)=>sv[`k_${i}`]).length;
+  const pct = dc > 0 ? Math.round(dd/dc*100) : 0;
+  const card = document.getElementById(`day-${dn}`);
+  if (!card) return;
+  card.querySelector('.day-pct').textContent = `${pct}%`;
+  card.querySelector('.mini-fill').style.width = `${pct}%`;
+  if (pct === 100 && gd(dn).status !== 'skipped') setDayStatus(dn, 'complete');
+}
+
+/* ================================================================
+   STATS
+================================================================ */
+function updateStats() {
+  const today = getCurrentDay();
+  let totalC=0, doneC=0, totalH=0, completedD=0, ratingSum=0, ratedD=0;
+  const wPcts = {1:[],2:[],3:[],4:[]};
+
+  CURRICULUM.forEach((d,idx) => {
+    const dn=idx+1, sv=gd(dn), wn=Math.ceil(dn/7);
+    const dc=d.topics.length+d.tasks.length;
+    const dd=d.topics.filter((_,i)=>sv[`t_${i}`]).length+d.tasks.filter((_,i)=>sv[`k_${i}`]).length;
+    totalC+=dc; doneC+=dd;
+    wPcts[wn].push(dc>0?dd/dc:0);
+    if(sv.actual) totalH+=parseFloat(sv.actual)||0;
+    if(sv.status==='complete') completedD++;
+    if(sv.rating){ratingSum+=parseInt(sv.rating);ratedD++;}
+  });
+
+  const oPct = totalC>0?Math.round(doneC/totalC*100):0;
+  const avgRating = ratedD>0?(ratingSum/ratedD).toFixed(1):'—';
+
+  document.getElementById('h-overall').textContent = `${oPct}%`;
+  document.getElementById('h-done').textContent = `${completedD}/28`;
+  document.getElementById('h-hours').textContent = `${totalH.toFixed(1)}h`;
+  document.getElementById('h-rating').textContent = avgRating;
+  document.getElementById('main-pb').style.width = `${oPct}%`;
+  document.getElementById('pb-lbl').textContent = `${doneC} / ${totalC} tasks`;
+  document.getElementById('day-chip').textContent = `DAY ${today} / 28`;
+
+  const expectedPct = Math.round(today/28*100);
+  const badge = document.getElementById('h-status');
+  badge.className = 'status-chip';
+  if(completedD===0&&oPct===0){badge.className+=' s-new';badge.textContent='NOT STARTED';}
+  else if(oPct>=expectedPct+10){badge.className+=' s-ahead';badge.textContent='🔥 AHEAD';}
+  else if(oPct>=expectedPct-5){badge.className+=' s-ontrack';badge.textContent='✓ ON TRACK';}
+  else{badge.className+=' s-behind';badge.textContent='⚠ BEHIND';}
+
+  [1,2,3,4].forEach(w=>{
+    const pcts=wPcts[w];
+    const avgP=pcts.length>0?Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length*100):0;
+    document.getElementById(`w${w}-pct`).textContent=`${avgP}%`;
+    const bc=document.getElementById(`w${w}-bars`);
+    if(bc){bc.innerHTML='';pcts.forEach(p=>{const b=document.createElement('div');b.className='wk-bar';
+      b.style.height=`${Math.max(3,Math.round(p*28))}px`;
+      b.style.background=p>=1?'var(--green)':p>0?'var(--yellow)':'var(--bg5)';bc.appendChild(b);});}
+    const il=document.getElementById(`wki${w}`);
+    if(il){const done=pcts.filter(p=>p>=1).length;il.textContent=`${done}/${pcts.length} days done`;}
+  });
+
+  // Update weakness console stats
+  document.getElementById('wc-weak-count').textContent = countWeakDays();
+  document.getElementById('wc-total-hrs').textContent = `${totalH.toFixed(1)}h`;
+  document.getElementById('wc-completion').textContent = `${oPct}%`;
+  document.getElementById('wc-streak').textContent = calcStreak();
+}
+
+function countWeakDays() {
+  return CURRICULUM.filter((_,i)=>{const sv=gd(i+1);return sv.rating&&parseInt(sv.rating)<=2;}).length;
+}
+
+function calcStreak() {
+  const today = getCurrentDay();
+  let streak = 0;
+  for(let d=today;d>=1;d--){
+    const sv=gd(d);
+    if(sv.status==='complete'||sv.status==='pending') streak++;
+    else break;
+  }
+  return streak;
+}
+
+/* ================================================================
+   SCROLL TO TODAY
+================================================================ */
+function scrollToToday() {
+  switchPanel('tracker');
+  setTimeout(()=>{
+    const today = getCurrentDay();
+    const el = document.getElementById(`day-${today}`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});
+      if(!el.classList.contains('open')) toggleDay(today);}
+  }, 100);
+}
+
+/* ================================================================
+   PANELS
+================================================================ */
+let currentPanel = 'tracker';
+
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  currentPanel = name;
+  if(name==='recall') buildFlashcards();
+  if(name==='mistakes') renderMistakes();
+  if(name==='revision') renderRevision();
+  if(name==='projects') renderProjects();
+  if(name==='explain') renderExplainScores();
+  if(name==='weakness') runWeaknessAnalysis();
+}
+
+/* ================================================================
+   ── FEATURE 1: RAPID RECALL (FLASHCARDS) ──
+================================================================ */
+let fcCards = [], fcIdx = 0, fcFilter = 'all';
+
+function buildFlashcards() {
+  // Build cards from all 28 days' questions + answers
+  const all = [];
+  CURRICULUM.forEach(d => {
+    d.questions.forEach((q, qi) => {
+      const key = `recall_${d.day}_${qi}`;
+      const rating = APP.recall ? APP.recall[key] : null;
+      all.push({ day: d.day, title: d.title, question: q, answer: d.answers[qi] || '', rating, key });
+    });
+  });
+
+  // Apply filter
+  fcCards = all.filter(c => {
+    if(fcFilter === 'all') return true;
+    if(fcFilter === 'unseen') return !c.rating;
+    return c.rating === fcFilter;
+  });
+
+  if(fcCards.length === 0) {
+    fcCards = all; // fallback to all
+    fcFilter = 'all';
+    document.querySelectorAll('.fc-tag').forEach(t=>t.classList.toggle('active',t.dataset.filter==='all'));
+  }
+
+  showCard(0);
+}
+
+function showCard(idx) {
+  if(fcCards.length === 0) {
+    document.getElementById('fc-question').textContent = 'No flashcards match this filter.';
+    document.getElementById('fc-day-badge').textContent = '—';
+    document.getElementById('fc-prog').textContent = 'Card 0 / 0';
+    document.getElementById('fc-rating-row').style.display = 'none';
+    return;
+  }
+  fcIdx = Math.max(0, Math.min(idx, fcCards.length-1));
+  const c = fcCards[fcIdx];
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('revealed');
+  document.getElementById('fc-question').textContent = c.question;
+  document.getElementById('fc-answer').textContent = c.answer || 'No model answer saved — write your own!';
+  document.getElementById('fc-day-badge').textContent = `Day ${c.day} — ${c.title}`;
+  document.getElementById('fc-prog').textContent = `Card ${fcIdx+1} / ${fcCards.length}`;
+  document.getElementById('fc-rating-row').style.display = 'none';
+
+  // Highlight if previously rated
+  const rateRow = document.getElementById('fc-rating-row');
+  rateRow.querySelectorAll('.fc-rate-btn').forEach(b=>b.style.opacity='1');
+  if(c.rating) {
+    const existing = rateRow.querySelector(`.r-${c.rating}`);
+    if(existing) existing.style.outline = '2px solid currentColor';
+  }
+}
+
+function revealCard() {
+  const fc = document.getElementById('flashcard');
+  if(fc.classList.contains('revealed')) return;
+  fc.classList.add('revealed');
+  document.getElementById('fc-rating-row').style.display = 'flex';
+}
+
+function rateCard(rating) {
+  if(!APP.recall) APP.recall = {};
+  const c = fcCards[fcIdx];
+  APP.recall[c.key] = rating;
+  c.rating = rating;
+  save();
+  // Visual feedback
+  document.getElementById('fc-rating-row').querySelectorAll('.fc-rate-btn').forEach(b=>{
+    b.style.opacity = b.classList.contains(`r-${rating}`) ? '1' : '0.4';
+  });
+  setTimeout(()=>nextCard(), 400);
+}
+
+function nextCard() { showCard(fcIdx+1 < fcCards.length ? fcIdx+1 : 0); }
+function prevCard() { showCard(fcIdx-1 >= 0 ? fcIdx-1 : fcCards.length-1); }
+function shuffleCards() { fcCards.sort(()=>Math.random()-.5); showCard(0); }
+function startRecall() { if(!APP.recall) APP.recall={}; buildFlashcards(); }
+
+// Filter tags
+document.getElementById('fc-filter').addEventListener('click', e=>{
+  const tag = e.target.closest('.fc-tag');
+  if(!tag) return;
+  document.querySelectorAll('.fc-tag').forEach(t=>t.classList.remove('active'));
+  tag.classList.add('active');
+  fcFilter = tag.dataset.filter;
+  buildFlashcards();
+});
+
+/* ================================================================
+   ── FEATURE 2: MISTAKE LOG ──
+================================================================ */
+function addMistake() {
+  const topic = document.getElementById('ml-topic').value.trim();
+  const day = document.getElementById('ml-day').value;
+  const cat = document.getElementById('ml-cat').value;
+  const sev = document.getElementById('ml-sev').value;
+  const desc = document.getElementById('ml-desc').value.trim();
+  const fix = document.getElementById('ml-fix').value.trim();
+  if(!topic) { alert('Enter a topic.'); return; }
+  if(!APP.mistakes) APP.mistakes = [];
+  APP.mistakes.unshift({ id: Date.now(), topic, day: day||'—', cat, sev, desc, fix, resolved: false, date: getTodayString() });
+  save();
+  // Clear form
+  ['ml-topic','ml-day','ml-desc','ml-fix'].forEach(id=>document.getElementById(id).value='');
+  renderMistakes();
+}
+
+function deleteMistake(id) {
+  if(!APP.mistakes) return;
+  APP.mistakes = APP.mistakes.filter(m=>m.id!==id);
+  save(); renderMistakes();
+}
+
+function resolveMistake(id) {
+  if(!APP.mistakes) return;
+  const m = APP.mistakes.find(m=>m.id===id);
+  if(m) m.resolved = !m.resolved;
+  save(); renderMistakes();
+}
+
+function renderMistakes() {
+  const list = document.getElementById('ml-list');
+  const mistakes = APP.mistakes || [];
+  if(mistakes.length === 0){
+    list.innerHTML = '<div class="ml-empty">🎯 No mistakes logged yet. When you spot a gap, log it here.</div>';
+    return;
+  }
+  list.innerHTML = mistakes.map(m => `
+    <div class="ml-item${m.resolved?' resolved':''}" id="mi-${m.id}">
+      <button class="ml-del" onclick="deleteMistake(${m.id})">×</button>
+      <div class="ml-item-hdr">
+        <span class="ml-sev sev-${m.sev}">${m.sev==='high'?'🔴 HIGH':m.sev==='med'?'🟡 MED':'🟢 LOW'}</span>
+        <span class="ml-topic">${escHtml(m.topic)}</span>
+      </div>
+      <div class="ml-meta">
+        <span class="ml-tag">Day ${m.day}</span>
+        <span class="ml-tag">${escHtml(m.cat)}</span>
+        <span class="ml-tag">${m.date}</span>
+        <button class="ml-resolve-btn" onclick="resolveMistake(${m.id})">${m.resolved?'✓ Resolved':'Mark Resolved'}</button>
+      </div>
+      ${m.desc?`<div class="ml-desc">${escHtml(m.desc)}</div>`:''}
+      ${m.fix?`<div class="ml-fix">${escHtml(m.fix)}</div>`:''}
+    </div>`).join('');
+}
+
+/* ================================================================
+   ── FEATURE 3: REVISION LOOP (SPACED REPETITION BUCKETS) ──
+================================================================ */
+function renderRevision() {
+  // Bucket 1: rating 1-2 or no rating but started
+  // Bucket 2: rating 3
+  // Bucket 3: rating 4-5
+  const b1=[],b2=[],b3=[];
+  CURRICULUM.forEach((d,i)=>{
+    const sv=gd(i+1);
+    const r=parseInt(sv.rating)||0;
+    const started=Object.keys(sv).some(k=>(k.startsWith('t_')||k.startsWith('k_'))&&sv[k]);
+    if(!started&&r===0) return; // not touched yet
+    if(r>=4) b3.push({day:i+1,title:d.title,rating:r});
+    else if(r===3) b2.push({day:i+1,title:d.title,rating:r});
+    else b1.push({day:i+1,title:d.title,rating:r});
+  });
+
+  function renderBucket(items, containerId, countId) {
+    const el = document.getElementById(containerId);
+    const ce = document.getElementById(countId);
+    ce.textContent = `${items.length} days`;
+    el.innerHTML = items.length===0
+      ? '<div style="font-size:11px;color:var(--text3);padding:8px 0">None yet</div>'
+      : items.map(it=>`<div class="rl-item" onclick="switchPanel('tracker');setTimeout(()=>{const e=document.getElementById('day-${it.day}');if(e){e.scrollIntoView({behavior:'smooth'});if(!e.classList.contains('open'))toggleDay(${it.day})}},150)">
+          <span class="rl-day-badge">D${it.day}</span>${escHtml(it.title)}${it.rating?` <span style="margin-left:auto;font-family:var(--font-m);font-size:10px;color:var(--yellow)">★${it.rating}</span>`:''}
+        </div>`).join('');
+  }
+
+  renderBucket(b1,'rl-bucket-1','rl-count-1');
+  renderBucket(b2,'rl-bucket-2','rl-count-2');
+  renderBucket(b3,'rl-bucket-3','rl-count-3');
+
+  // Calendar
+  const cal = document.getElementById('rl-calendar');
+  const today = getCurrentDay();
+  cal.innerHTML = Array.from({length:28},(_,i)=>{
+    const dn=i+1, sv=gd(dn), r=parseInt(sv.rating)||0;
+    const isT=dn===today;
+    const hasRev=r>0&&r<4;
+    return `<div class="rl-cal-day${hasRev?' has-revision':''}${isT?' today-cal':''}" 
+      title="Day ${dn}: ${CURRICULUM[i].title}" onclick="scrollToDay(${dn})">${dn}${r>0?`<span class="rl-dot-badge"></span>`:''}</div>`;
+  }).join('');
+}
+
+function scrollToDay(dn) {
+  switchPanel('tracker');
+  setTimeout(()=>{
+    const el=document.getElementById(`day-${dn}`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});
+      if(!el.classList.contains('open'))toggleDay(dn);}
+  }, 150);
+}
+
+/* ================================================================
+   ── FEATURE 4: PROJECT MAPPING ──
+================================================================ */
+const DEFAULT_PROJECTS = [
+  {id:1,name:'Portfolio Site',icon:'🖥',status:'active',days:'1-3',desc:'Personal portfolio showcasing semantic HTML, CSS animations, and accessible navigation patterns.',concepts:['Semantic HTML','CSS Grid','Accessibility','Performance'],url:''},
+  {id:2,name:'React Dashboard',icon:'📊',status:'planned',days:'8-14',desc:'Data visualization dashboard with complex state management, custom hooks, and virtualized tables.',concepts:['useReducer','React.memo','useMemo','Virtual scroll'],url:''},
+  {id:3,name:'Next.js Blog',icon:'📝',status:'planned',days:'15-16',desc:'ISR-powered blog with SSG/SSR hybrid, image optimization, and 95+ Lighthouse score.',concepts:['ISR','next/image','SSG','SEO'],url:''},
+  {id:4,name:'DSA Practice',icon:'🧮',status:'planned',days:'22-25',desc:'Solving LeetCode problems and building vanilla JS UI components to demonstrate algorithmic thinking.',concepts:['Two Pointers','BFS/DFS','Recursion','Event Delegation'],url:''},
+];
+
+function getProjects() { return APP.projects || DEFAULT_PROJECTS; }
+
+function addProject() {
+  const name=document.getElementById('pm-name').value.trim();
+  if(!name){alert('Enter a project name.');return;}
+  const projects = getProjects();
+  projects.push({
+    id:Date.now(),
+    name,icon:document.getElementById('pm-icon').value||'📦',
+    status:document.getElementById('pm-status').value,
+    days:document.getElementById('pm-days').value||'—',
+    desc:document.getElementById('pm-desc').value,
+    concepts:document.getElementById('pm-concepts').value.split(',').map(s=>s.trim()).filter(Boolean),
+    url:document.getElementById('pm-url').value
+  });
+  APP.projects = projects; save();
+  ['pm-name','pm-icon','pm-days','pm-desc','pm-concepts','pm-url'].forEach(id=>document.getElementById(id).value='');
+  renderProjects();
+}
+
+function deleteProject(id) {
+  APP.projects = getProjects().filter(p=>p.id!==id); save(); renderProjects();
+}
+
+function renderProjects() {
+  const grid = document.getElementById('pm-grid');
+  const projects = getProjects();
+  if(projects.length===0){grid.innerHTML='<div class="ml-empty">No projects yet. Add your first project below.</div>';return;}
+  grid.innerHTML = projects.map(p=>`
+    <div class="pm-card">
+      <button class="pm-del" onclick="deleteProject(${p.id})">×</button>
+      <div class="pm-card-hdr">
+        <span class="pm-icon">${p.icon||'📦'}</span>
+        <span class="pm-name">${escHtml(p.name)}</span>
+        <span class="pm-status-badge ps-${p.status}">${p.status==='active'?'🟢 Active':p.status==='planned'?'🟡 Planned':'⬜ Done'}</span>
+      </div>
+      <div style="font-family:var(--font-m);font-size:10px;color:var(--text3);margin-bottom:8px">Days ${escHtml(p.days)}</div>
+      ${p.desc?`<div class="pm-desc">${escHtml(p.desc)}</div>`:''}
+      <div class="pm-concepts">${(p.concepts||[]).map(c=>`<span class="pm-concept">${escHtml(c)}</span>`).join('')}</div>
+      ${p.url?`<div style="margin-top:8px"><a href="${escHtml(p.url)}" target="_blank" style="font-family:var(--font-m);font-size:11px;color:var(--accent)">↗ ${escHtml(p.url.replace(/https?:\/\//,''))}</a></div>`:''}
+    </div>`).join('');
+}
+
+/* ================================================================
+   ── FEATURE 5: EXPLANATION SCORE ──
+================================================================ */
+function scoreExplanation(text) {
+  if(!text||text.trim().length < 10) return 0;
+  const words = text.trim().split(/\s+/).length;
+  // Base score from word count (max 50pts)
+  let score = Math.min(50, Math.round(words / 2));
+  // Quality signals (each adds pts)
+  const signals = [
+    /because|therefore|this means|which means|as a result/i,  // causality
+    /example|for instance|e\.g\.|such as|like/i,              // examples
+    /however|but|whereas|on the other hand|unlike/i,           // contrast
+    /always|never|when|if|unless/i,                            // conditions
+    /react|javascript|css|html|browser|dom|api/i,              // technical terms
+    /\b[a-z]{6,}\b/,                                           // uses complex words
+    /[.!?][^.!?]{20,}/,                                        // multiple sentences
+  ];
+  signals.forEach(r=>{ if(r.test(text)) score+=7; });
+  return Math.min(100, score);
+}
+
+function scoreColor(s) {
+  if(s>=80) return 'var(--green)';
+  if(s>=50) return 'var(--yellow)';
+  if(s>=20) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function renderExplainScores() {
+  const list = document.getElementById('es-list');
+  const items = [];
+  let totalScore=0, count=0, bestScore=0, bestDay=0;
+
+  CURRICULUM.forEach((d,i)=>{
+    const sv=gd(i+1);
+    const score=scoreExplanation(sv.explain);
+    items.push({day:i+1,title:d.title,score,text:sv.explain||''});
+    if(sv.explain&&sv.explain.trim().length>10){totalScore+=score;count++;
+      if(score>bestScore){bestScore=score;bestDay=i+1;}}
+  });
+
+  const avg = count>0?Math.round(totalScore/count):0;
+  document.getElementById('es-total').textContent = count>0?`${avg}/100`:'—';
+  document.getElementById('es-filled').textContent = count;
+  document.getElementById('es-best').textContent = bestDay>0?`Day ${bestDay}`:'—';
+
+  list.innerHTML = items.map(it=>`
+    <div class="es-item">
+      <div class="es-item-hdr">
+        <span class="es-day">Day ${it.day}</span>
+        <span class="es-day-title">${escHtml(it.title)}</span>
+        <span class="es-score" style="color:${scoreColor(it.score)}">${it.text.trim().length>10?it.score+'/100':'—'}</span>
+        ${it.score>=80?'<span class="es-ai-badge">✦ Strong</span>':''}
+      </div>
+      ${it.text.trim().length>10?`
+        <div class="es-score-bar"><div class="es-score-fill" style="width:${it.score}%;background:${scoreColor(it.score)}"></div></div>
+        <div class="es-text">${escHtml(it.text.substring(0,200))}${it.text.length>200?'…':''}</div>`
+      : '<div class="es-no-entry">No explanation written yet. Open the day card and fill in "Explain in Your Own Words."</div>'}
+    </div>`).join('');
+}
+
+/* ================================================================
+   ── FEATURE 6: WEAKNESS CONSOLE ──
+================================================================ */
+function runWeaknessAnalysis() {
+  const body = document.getElementById('wc-body');
+  const lines = [];
+
+  function line(cls, prompt, text) {
+    lines.push(`<div class="wc-line"><span class="wc-prompt">${prompt}</span><span class="${cls}">${text}</span></div>`);
+  }
+
+  const today = getCurrentDay();
+  const totalH = CURRICULUM.reduce((sum,_,i)=>sum+(parseFloat(gd(i+1).actual)||0),0);
+  const completedDays = CURRICULUM.filter((_,i)=>gd(i+1).status==='complete').length;
+  const ratedDays = CURRICULUM.filter((_,i)=>gd(i+1).rating).length;
+  const weakDays = CURRICULUM.filter((_,i)=>parseInt(gd(i+1).rating)<=2&&gd(i+1).rating).length;
+  const avgR = ratedDays>0?( CURRICULUM.reduce((s,_,i)=>{const r=parseInt(gd(i+1).rating)||0;return s+r;},0)/ratedDays).toFixed(1):'N/A';
+
+  line('wc-info','$', `fe-tracker analyze --day=${today} --full-report`);
+  line('wc-dim','','');
+  line('wc-success','▶', `[SYSTEM] Frontend Interview OS v3.0 — Weakness Analyzer`);
+  line('wc-dim','','────────────────────────────────────────────────');
+  line('wc-output','›', `Current Day: ${today} / 28`);
+  line('wc-output','›', `Days Completed: ${completedDays} | Days Rated: ${ratedDays}`);
+  line('wc-output','›', `Total Study Time: ${totalH.toFixed(1)} hours | Avg Rating: ${avgR} / 5`);
+  line('wc-output','›', `Streak: ${calcStreak()} consecutive days active`);
+  line('wc-dim','','');
+
+  // Rating distribution bar chart
+  line('wc-cmd','$', `fe-tracker ratings --chart`);
+  lines.push('<div class="wc-chart">');
+  const ratingBuckets = [0,0,0,0,0];
+  CURRICULUM.forEach((_,i)=>{const r=parseInt(gd(i+1).rating);if(r>=1&&r<=5)ratingBuckets[r-1]++;});
+  const rLabels=['1 No idea','2 Vague  ','3 Getting','4 Solid  ','5 Expert '];
+  const rColors=['var(--red)','var(--orange)','var(--yellow)','var(--cyan)','var(--green)'];
+  ratingBuckets.forEach((c,i)=>{
+    const w=c>0?Math.round(c/28*100):0;
+    lines.push(`<div class="wc-bar-row">
+      <span class="wc-bar-lbl" style="color:${rColors[i]}">${rLabels[i]}</span>
+      <div class="wc-bar-track"><div class="wc-bar-val" style="width:${w}%;background:${rColors[i]}"></div></div>
+      <span class="wc-bar-num">${c} days</span></div>`);
+  });
+  lines.push('</div>');
+
+  // Weak spots
+  line('wc-dim','','');
+  line('wc-cmd','$', `fe-tracker weak --threshold=2`);
+  const weakSpots = CURRICULUM.filter((_,i)=>parseInt(gd(i+1).rating)<=2&&gd(i+1).rating)
+    .map(d=>`Day ${d.day}: ${d.title}`);
+  if(weakSpots.length===0){
+    line('wc-success','✓', 'No weak spots detected (rated ≤ 2). Keep going!');
+  } else {
+    line('wc-warn','⚠', `Found ${weakSpots.length} weak area(s) needing attention:`);
+    weakSpots.forEach(s=>line('wc-error','  →', s));
+  }
+
+  // Not-started days
+  line('wc-dim','','');
+  line('wc-cmd','$', `fe-tracker gaps --before=${today}`);
+  const gaps = CURRICULUM.slice(0,today).filter((_,i)=>{
+    const sv=gd(i+1);
+    return !Object.keys(sv).some(k=>(k.startsWith('t_')||k.startsWith('k_'))&&sv[k]);
+  }).map(d=>`Day ${d.day}: ${d.title}`);
+  if(gaps.length===0){
+    line('wc-success','✓', 'No gaps detected for days 1–'+today+'.');
+  } else {
+    line('wc-warn','⚠', `${gaps.length} day(s) not started (within your schedule):`);
+    gaps.slice(0,5).forEach(s=>line('wc-error','  →', s));
+    if(gaps.length>5) line('wc-dim','  …', `and ${gaps.length-5} more`);
+  }
+
+  // Explanation quality
+  line('wc-dim','','');
+  line('wc-cmd','$', `fe-tracker explain --analyze`);
+  const explainScores = CURRICULUM.map((d,i)=>({day:i+1,title:d.title,score:scoreExplanation(gd(i+1).explain)}));
+  const withExplain = explainScores.filter(e=>gd(e.day).explain&&gd(e.day).explain.trim().length>10);
+  const lowExplain = withExplain.filter(e=>e.score<40);
+  line('wc-output','›', `${withExplain.length}/28 days have written explanations`);
+  if(lowExplain.length>0){
+    line('wc-warn','⚠', `${lowExplain.length} explanation(s) need improvement (score < 40):`);
+    lowExplain.slice(0,3).forEach(e=>line('wc-error','  →', `Day ${e.day}: ${e.title} [${e.score}/100]`));
+  } else if(withExplain.length>0){
+    line('wc-success','✓', 'All written explanations look solid.');
+  }
+
+  // Hours heatmap
+  line('wc-dim','','');
+  line('wc-cmd','$', `fe-tracker hours --heatmap`);
+  lines.push('<div class="wk-heatmap">');
+  const maxHours = Math.max(1,...CURRICULUM.map((_,i)=>parseFloat(gd(i+1).actual)||0));
+  CURRICULUM.forEach((d,i)=>{
+    const h=parseFloat(gd(i+1).actual)||0;
+    const intensity=h>0?Math.max(0.15,h/maxHours):0;
+    const bg=h>0?`rgba(77,159,255,${intensity})`:'var(--bg3)';
+    lines.push(`<div class="hm-cell" style="background:${bg}" title="Day ${i+1}: ${h}h"></div>`);
+  });
+  lines.push('</div>');
+  line('wc-dim','','← Day 1  ·  Each cell = 1 day  ·  Day 28 →');
+
+  // Recommendations
+  line('wc-dim','','');
+  line('wc-cmd','$', `fe-tracker recommend`);
+  const recs = [];
+  if(weakSpots.length>0) recs.push(`Prioritize re-studying: ${weakSpots.slice(0,2).join(', ')}`);
+  if(withExplain.length < today/2) recs.push(`Write explanations for at least ${Math.ceil(today/2)} days — it builds interview articulation`);
+  if(totalH < today * 2) recs.push(`Average ${(totalH/Math.max(today,1)).toFixed(1)}h/day. Aim for 2-3h/day for thorough prep`);
+  if((APP.mistakes||[]).length===0) recs.push(`Start your Mistake Log — logging errors accelerates retention`);
+  if(recs.length===0) recs.push('Excellent progress! Stay consistent and keep using the Mistake Log.');
+  recs.forEach(r=>line('wc-success','✦', r));
+
+  line('wc-dim','','');
+  line('wc-dim','›', `Analysis complete. Run again anytime.`);
+  line('wc-dim','$', '█');
+
+  body.innerHTML = lines.join('');
+  body.scrollTop = body.scrollHeight;
+}
+
+function exportWeaknessReport() {
+  const lines = document.getElementById('wc-body').innerText;
+  const blob = new Blob([lines], {type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`fe-weakness-report-${getTodayString()}.txt`;a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ================================================================
+   EXPORT
+================================================================ */
+function exportData() {
+  const blob = new Blob([JSON.stringify(APP,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`fe-tracker-${getTodayString()}.json`;a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ================================================================
+   START DATE MODAL
+================================================================ */
+function showStartModal() {
+  const modal = document.getElementById('start-modal');
+  document.getElementById('start-date-input').value = getTodayString();
+  modal.classList.add('open');
+}
+
+function saveStartDate() {
+  const val = document.getElementById('start-date-input').value || getTodayString();
+  APP.startDate = val;
+  save();
+  document.getElementById('start-modal').classList.remove('open');
+  updateStats();
+  renderTracker();
+  scrollToToday();
+}
+
+// Close modal on overlay click
+document.getElementById('start-modal').addEventListener('click', e=>{
+  if(e.target === document.getElementById('start-modal')) {
+    // Don't close — force them to set a date
+  }
+});
+
+/* ================================================================
+   INIT
+================================================================ */
+function init() {
+  // If no start date, show the modal to set one
+  if(!APP.startDate) {
+    showStartModal();
+  }
+
+  renderTracker();
+  updateStats();
+
+  // Open today's card
+  const today = getCurrentDay();
+  const todayCard = document.getElementById(`day-${today}`);
+  if(todayCard && !todayCard.classList.contains('open')) {
+    todayCard.classList.add('open');
+  }
+
+  // Scroll to today after slight delay
+  if(APP.startDate) {
+    setTimeout(()=>scrollToToday(), 350);
+  }
+
+  // Init panel data
+  renderMistakes();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
